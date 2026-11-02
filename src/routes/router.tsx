@@ -6,6 +6,8 @@ import { AppLayout } from '@/components/layout/app-layout';
 
 const LoginPage = lazy(() => import('@/pages/login'));
 const RegisterPage = lazy(() => import('@/pages/register'));
+const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
+const CommunitiesPage = lazy(() => import('@/pages/communities'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
@@ -21,6 +23,7 @@ export const router = createBrowserRouter([
     children: [
       { path: '/login', element: withSuspense(<LoginPage />) },
       { path: '/register', element: withSuspense(<RegisterPage />) },
+      { path: '/forgot-password', element: withSuspense(<ForgotPasswordPage />) },
     ],
   },
   {
@@ -31,6 +34,7 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/ranking', element: <RankingPage /> },
+          { path: '/communities', element: <CommunitiesPage /> },
           { path: '/matches', element: <MatchesPage /> },
           { path: '/matches/:id', element: <MatchDetailPage /> },
           { path: '/profile', element: <ProfilePage /> },

@@ -1,8 +1,11 @@
 import type { PropsWithChildren } from 'react';
 
+import { WelcomeSplash } from '@/components/common/welcome-splash';
+
 export function AuthLayout({ title, subtitle, children }: PropsWithChildren<{ title: string; subtitle: string }>) {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
+      <WelcomeSplash />
       <div className="w-full max-w-md">
         <h1 className="text-center text-4xl font-extrabold">
           Pong<span className="text-brand">Rank</span>

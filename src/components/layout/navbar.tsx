@@ -5,6 +5,7 @@ import { useSession } from '@/context/session';
 const LINKS = [
   { to: '/', label: 'Inicio', end: true },
   { to: '/ranking', label: 'Ranking' },
+  { to: '/communities', label: 'Comunidades' },
   { to: '/matches', label: 'Partidas' },
   { to: '/profile', label: 'Perfil' },
 ];

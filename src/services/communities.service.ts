@@ -17,5 +17,8 @@ export const communitiesService = {
   ranking: (communityId: number, params: PageParams, signal?: AbortSignal): Promise<Page<RankingEntry>> =>
     http.get(`/communities/${communityId}/ranking`, { params, signal }).then((r) => normalizePage<RankingEntry>(r.data)),
 
+  leave: (communityId: number, playerId: number) =>
+    http.delete<void>(`/communities/${communityId}/members/${playerId}`).then((r) => r.data),
+
   join: (communityId: number) => http.post<unknown>(`/communities/${communityId}/members`, {}).then((r) => r.data),
 };
