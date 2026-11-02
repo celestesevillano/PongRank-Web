@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 
 import { PaginationBar } from '@/components/common/pagination-bar';
 import { ScreenState } from '@/components/common/screen-state';
@@ -18,7 +18,17 @@ export default function MatchesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-extrabold">Partidas</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-extrabold">Partidas</h1>
+        <div className="flex gap-2">
+          <Link to="/matches/find" className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-bold hover:bg-line">
+            Buscar partida
+          </Link>
+          <Link to="/matches/new" className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold hover:bg-brand-dark">
+            Crear partida
+          </Link>
+        </div>
+      </div>
       <Tabs<Tab>
         tabs={[
           { value: 'active', label: 'Activas' },
