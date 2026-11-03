@@ -42,6 +42,9 @@ export default function LoginPage() {
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
         <TextField label="Correo" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
         <TextField label="Contraseña" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
+        <Link to="/forgot-password" className="-mt-2 text-right text-sm font-bold text-brand">
+          ¿Olvidaste tu contraseña?
+        </Link>
         <Button type="submit" loading={submitting}>
           Entrar
         </Button>
