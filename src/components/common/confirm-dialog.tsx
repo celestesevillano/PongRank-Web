@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react';
-
+import { Modal } from '@/components/common/modal';
 import { Button } from '@/components/ui/button';
 
 type ConfirmDialogProps = {
@@ -13,18 +12,8 @@ type ConfirmDialogProps = {
 };
 
 export function ConfirmDialog({ open, title, message, confirmLabel, loading = false, onConfirm, onCancel }: ConfirmDialogProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
-
   return (
-    <dialog ref={dialogRef} onClose={onCancel} className="m-auto w-full max-w-sm rounded-2xl border border-line bg-surface p-6 text-white backdrop:bg-black/70">
-      <h2 className="text-lg font-bold">{title}</h2>
+    <Modal open={open} title={title} onClose={onCancel}>
       <p className="mt-2 text-sm text-muted">{message}</p>
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="secondary" onClick={onCancel} disabled={loading}>
@@ -34,6 +23,6 @@ export function ConfirmDialog({ open, title, message, confirmLabel, loading = fa
           {confirmLabel}
         </Button>
       </div>
-    </dialog>
+    </Modal>
   );
 }

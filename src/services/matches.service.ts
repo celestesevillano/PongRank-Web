@@ -38,6 +38,8 @@ export const matchesService = {
   dispute: (matchId: number, reason: string) =>
     http.put<MatchDetail>(`/matches/${matchId}/dispute`, { reason }).then((r) => r.data),
 
+  cancel: (matchId: number) => http.put<MatchResponse>(`/matches/${matchId}/cancel`).then((r) => r.data),
+
   create: (input: MatchCreateInput) => http.post<MatchResponse>('/matches', input).then((r) => r.data),
 
   join: (matchId: number, location: Coordinates) =>
