@@ -7,6 +7,7 @@ import { DisputeDialog } from '@/components/matches/dispute-dialog';
 import { MatchStatusBadge } from '@/components/matches/match-status-badge';
 import { ScoreRecorder } from '@/components/matches/score-recorder';
 import { SetList } from '@/components/matches/set-list';
+import { WhatsAppLink } from '@/components/matches/whatsapp-link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
@@ -89,6 +90,10 @@ function MatchContent({ match, onChanged }: { match: MatchDetail; onChanged: () 
       </header>
 
       <StatusMessage match={match} view={view} ratingPending={ratingPending} />
+
+      {view.isParticipant && view.opponent?.whatsapp && match.status !== 'CANCELLED' && match.status !== 'WALKOVER' && (
+        <WhatsAppLink phone={view.opponent.whatsapp} opponentName={view.opponent.name} />
+      )}
 
       {view.canScore && (
         <ScoreRecorder format={match.format} myName={player!.name} opponentName={opponentName} player1IsMe={view.isPlayer1} submitting={busy} onSubmit={submitScore} />
