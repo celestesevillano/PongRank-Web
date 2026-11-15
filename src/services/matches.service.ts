@@ -1,12 +1,12 @@
 import { http } from '@/services/http';
-import type { MatchDetail, MatchResponse, Page, PageParams, SetScore } from '@/types/api';
+import type { MatchDetail, MatchFormat, MatchResponse, Page, PageParams, SetScore } from '@/types/api';
 import { normalizePage } from '@/utils/pagination';
 
 export type Coordinates = { latitude: number; longitude: number };
 
 export type MatchCreateInput = {
   matchType: 'FRIEND' | 'COMMUNITY' | 'LOCATION';
-  format: 'BO3' | 'BO5' | 'BO7';
+  format: MatchFormat;
   opponentId?: number;
   communityId?: number;
 } & Partial<Coordinates>;

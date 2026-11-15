@@ -111,3 +111,22 @@ export type MatchDetail = MatchResponse & {
 };
 
 export type SetScore = { setNumber: number; scorePlayer1: number; scorePlayer2: number };
+
+export type Friendship = {
+  id: number;
+  playerA: PlayerSummary;
+  playerB: PlayerSummary;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+export type CommunityMember = {
+  membershipId: number;
+  playerId: number;
+  playerName: string;
+  ratingGlicko: number;
+  role: 'COMMUNITY_ADMIN' | 'MEMBER';
+  status: string;
+  joinedAt: string;
+};
