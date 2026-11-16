@@ -1,5 +1,5 @@
 import { http } from '@/services/http';
-import type { CommunityResponse, Page, PageParams, RankingEntry } from '@/types/api';
+import type { CommunityMember, CommunityResponse, Page, PageParams, RankingEntry } from '@/types/api';
 import { normalizePage } from '@/utils/pagination';
 
 export type CommunityType = CommunityResponse['communityType'];
@@ -16,6 +16,9 @@ export const communitiesService = {
 
   ranking: (communityId: number, params: PageParams, signal?: AbortSignal): Promise<Page<RankingEntry>> =>
     http.get(`/communities/${communityId}/ranking`, { params, signal }).then((r) => normalizePage<RankingEntry>(r.data)),
+
+  members: (communityId: number, params: PageParams, signal?: AbortSignal): Promise<Page<CommunityMember>> =>
+    http.get(`/communities/${communityId}/members`, { params, signal }).then((r) => normalizePage<CommunityMember>(r.data)),
 
   leave: (communityId: number, playerId: number) =>
     http.delete<void>(`/communities/${communityId}/members/${playerId}`).then((r) => r.data),

@@ -1,23 +1,16 @@
+import { LoaderCircle, type LucideIcon } from 'lucide-react';
 import type { ButtonHTMLAttributes } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+import { buttonClasses, type ButtonVariant } from '@/components/ui/button-styles';
 
-const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-brand text-white hover:bg-brand-dark',
-  secondary: 'border border-line bg-surface text-white hover:bg-line',
-  ghost: 'text-muted hover:text-white',
-};
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; loading?: boolean; icon?: LucideIcon };
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant; loading?: boolean };
-
-export function Button({ variant = 'primary', loading = false, disabled, className = '', children, ...rest }: ButtonProps) {
+export function Button({ variant = 'primary', loading = false, icon: Icon, disabled, className = '', children, ...rest }: ButtonProps) {
+  const LeadingIcon = loading ? LoaderCircle : Icon;
   return (
-    <button
-      {...rest}
-      disabled={disabled || loading}
-      className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${className}`}
-    >
-      {loading ? 'Cargando…' : children}
+    <button {...rest} disabled={disabled || loading} aria-busy={loading || undefined} className={buttonClasses(variant, className)}>
+      {LeadingIcon && <LeadingIcon aria-hidden className={`size-4 shrink-0 ${loading ? 'animate-spin' : ''}`} />}
+      {children}
     </button>
   );
 }

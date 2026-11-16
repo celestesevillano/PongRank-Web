@@ -1,6 +1,6 @@
 # PongRank Web
 
-Cliente web de PongRank (React + Vite + TypeScript + Tailwind CSS + React Router + axios). Consume la API de [PongRank-Backend](https://github.com/adrianaalvarad/PongRank-Backend).
+Cliente web de PongRank (React + Vite + TypeScript + Tailwind CSS + React Router + axios). Consume la API de [PongRank-Backend](https://github.com/celestesevillano/PongRank-Backend).
 
 ## Requisitos
 

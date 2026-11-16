@@ -50,7 +50,11 @@ export type PlayerSummary = {
   whatsapp: string | null;
 };
 
-export type MatchStatus = string;
+export type MatchStatus = 'CREATED' | 'PROPOSED_P1' | 'PROPOSED_P2' | 'CONFIRMED' | 'DISPUTED' | 'CANCELLED' | 'WALKOVER';
+
+export type MatchFormat = 'BO3' | 'BO5' | 'BO7';
+
+export type MatchType = 'FRIEND' | 'COMMUNITY' | 'LOCATION' | 'TOURNAMENT';
 
 export type MatchResponse = {
   id: number;
@@ -60,8 +64,8 @@ export type MatchResponse = {
   communityName: string | null;
   tournamentId: number | null;
   tournamentName: string | null;
-  format: 'BO3' | 'BO5' | 'BO7';
-  matchType: 'FRIEND' | 'COMMUNITY' | 'LOCATION' | 'TOURNAMENT';
+  format: MatchFormat;
+  matchType: MatchType;
   status: MatchStatus;
   latitude: number | null;
   longitude: number | null;
@@ -107,3 +111,22 @@ export type MatchDetail = MatchResponse & {
 };
 
 export type SetScore = { setNumber: number; scorePlayer1: number; scorePlayer2: number };
+
+export type Friendship = {
+  id: number;
+  playerA: PlayerSummary;
+  playerB: PlayerSummary;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+  updatedAt: string | null;
+};
+
+export type CommunityMember = {
+  membershipId: number;
+  playerId: number;
+  playerName: string;
+  ratingGlicko: number;
+  role: 'COMMUNITY_ADMIN' | 'MEMBER';
+  status: string;
+  joinedAt: string;
+};
