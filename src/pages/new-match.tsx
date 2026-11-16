@@ -94,7 +94,7 @@ export default function NewMatchPage() {
 
   return (
     <div className="flex max-w-xl flex-col gap-5">
-      <h1 className="text-2xl font-extrabold">Crear partida</h1>
+      <h1 className="text-[34px] leading-tight font-extrabold">Crear partida</h1>
       <Stepper steps={mode === 'open' ? ['Modalidad', 'Ubicación', 'Formato'] : STEPS} current={step} />
 
       {step === 0 && (
@@ -156,11 +156,11 @@ export default function NewMatchPage() {
           ) : communities.loading ? (
             <p className="text-sm text-muted">Cargando tus comunidades…</p>
           ) : communities.error ? (
-            <p className="text-sm text-red-300">{communities.error.message}</p>
+            <p className="text-sm text-brand">{communities.error.message}</p>
           ) : (
             <p className="text-sm text-muted">
               Aún no perteneces a ninguna comunidad.{' '}
-              <Link to={paths.communities} className="font-bold text-brand hover:underline">
+              <Link to={paths.communities} className="font-bold text-accent">
                 Únete a una
               </Link>
             </p>
@@ -172,10 +172,10 @@ export default function NewMatchPage() {
         <Card className="flex flex-col items-start gap-2">
           <h2 className="font-bold">Tu ubicación</h2>
           {location.coords ? (
-            <p className="text-sm text-emerald-300">Ubicación lista. Jugadores a menos de 5 km y con un rating parecido al tuyo verán tu partida.</p>
+            <p className="text-sm text-success">Ubicación lista. Jugadores a menos de 5 km y con un rating parecido al tuyo verán tu partida.</p>
           ) : (
             <>
-              <p className={`text-sm ${location.error ? 'text-red-300' : 'text-muted'}`}>
+              <p className={`text-sm ${location.error ? 'text-brand' : 'text-muted'}`}>
                 {location.error ?? 'La usamos solo para que jugadores cercanos encuentren tu partida.'}
               </p>
               <Button type="button" variant="secondary" loading={location.loading} onClick={location.request}>
@@ -188,7 +188,7 @@ export default function NewMatchPage() {
 
       {step === 1 && (
         <div className="flex justify-between">
-          <Button variant="ghost" onClick={() => setStep(0)}>
+          <Button variant="text" onClick={() => setStep(0)}>
             Volver
           </Button>
           <Button disabled={!rivalReady} onClick={() => setStep(2)}>
@@ -216,7 +216,7 @@ export default function NewMatchPage() {
             </dl>
           </Card>
           <div className="flex justify-between">
-            <Button variant="ghost" disabled={submitting} onClick={() => setStep(1)}>
+            <Button variant="text" disabled={submitting} onClick={() => setStep(1)}>
               Volver
             </Button>
             <Button loading={submitting} onClick={submit}>

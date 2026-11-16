@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Check, Flag, X } from 'lucide-react';
+import { useParams } from 'react-router-dom';
 
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { ScreenState } from '@/components/common/screen-state';
@@ -9,6 +10,7 @@ import { ScoreRecorder } from '@/components/matches/score-recorder';
 import { SetList } from '@/components/matches/set-list';
 import { WhatsAppLink } from '@/components/matches/whatsapp-link';
 import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useToast } from '@/context/toast';
@@ -31,9 +33,9 @@ export default function MatchDetailPage() {
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center">
         <p className="text-muted">Esa partida no existe.</p>
-        <Link to={paths.matches} className="font-bold text-brand hover:underline">
+        <ButtonLink to={paths.matches} variant="text">
           Ver mis partidas
-        </Link>
+        </ButtonLink>
       </div>
     );
   }
@@ -95,7 +97,7 @@ function MatchContent({ match, onChanged }: { match: MatchDetail; onChanged: () 
     <div className="flex max-w-2xl flex-col gap-4">
       <header className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-extrabold">{title}</h1>
+          <h1 className="text-[28px] leading-tight font-extrabold">{title}</h1>
           <MatchStatusBadge status={match.status} />
         </div>
         <p className="text-sm text-muted">
@@ -126,17 +128,17 @@ function MatchContent({ match, onChanged }: { match: MatchDetail; onChanged: () 
 
       {view.awaitingMyReview && (
         <div className="flex flex-wrap gap-3">
-          <Button disabled={busy} onClick={() => setPending('confirm')}>
+          <Button icon={Check} disabled={busy} onClick={() => setPending('confirm')}>
             Confirmar resultado
           </Button>
-          <Button variant="secondary" disabled={busy} onClick={() => setPending('dispute')}>
+          <Button variant="secondary" icon={Flag} disabled={busy} onClick={() => setPending('dispute')}>
             Disputar
           </Button>
         </div>
       )}
 
       {view.canCancel && (
-        <Button variant="ghost" className="self-start" disabled={busy} onClick={() => setPending('cancel')}>
+        <Button variant="text" icon={X} className="self-start" disabled={busy} onClick={() => setPending('cancel')}>
           Cancelar partida
         </Button>
       )}
@@ -200,7 +202,7 @@ function StatusMessage({ match, view, ratingPending }: StatusMessageProps) {
   return (
     <Notice tone="success">
       {view.iWon ? '¡Ganaste!' : 'Partida confirmada.'} Tu rating cambió{' '}
-      <strong className={delta >= 0 ? 'text-emerald-300' : 'text-red-300'}>
+      <strong className={delta >= 0 ? 'text-success' : 'text-brand'}>
         {delta >= 0 ? '+' : ''}
         {delta}
       </strong>{' '}
@@ -212,8 +214,8 @@ function StatusMessage({ match, view, ratingPending }: StatusMessageProps) {
 const NOTICE_TONES = {
   info: 'border-line text-muted',
   action: 'border-brand/60 text-white',
-  success: 'border-emerald-400/40 text-emerald-100',
-  danger: 'border-red-400/60 text-red-200',
+  success: 'border-success/50 text-white',
+  danger: 'border-gold/60 text-white',
 } as const;
 
 function Notice({ tone = 'info', children }: { tone?: keyof typeof NOTICE_TONES; children: ReactNode }) {

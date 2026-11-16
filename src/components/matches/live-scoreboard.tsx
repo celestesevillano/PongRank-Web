@@ -61,7 +61,7 @@ export function LiveScoreboard({ format, myName, opponentName, player1IsMe, subm
             Enviar resultado
           </Button>
         )}
-        <Button variant="ghost" disabled={events.length === 0 || submitting} onClick={() => setEvents((list) => list.slice(0, -1))}>
+        <Button variant="text" disabled={events.length === 0 || submitting} onClick={() => setEvents((list) => list.slice(0, -1))}>
           Deshacer último cambio
         </Button>
       </div>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Plus } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
 import { Button } from '@/components/ui/button';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card } from '@/components/ui/card';
 import { SelectField } from '@/components/ui/select-field';
 import { useSession } from '@/context/session';
@@ -32,12 +34,12 @@ export default function FindMatchPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-extrabold">Buscar partida</h1>
+      <h1 className="text-[34px] leading-tight font-extrabold">Buscar partida</h1>
       {location.coords ? (
         <OpenMatches coords={location.coords} />
       ) : (
         <Card className="flex flex-col items-start gap-3">
-          <p className={location.error ? 'text-red-300' : 'text-muted'}>{location.error ?? 'Buscando tu ubicación para mostrar partidas cercanas…'}</p>
+          <p className={location.error ? 'text-brand' : 'text-muted'}>{location.error ?? 'Buscando tu ubicación para mostrar partidas cercanas…'}</p>
           <Button variant="secondary" loading={location.loading} onClick={request}>
             Reintentar
           </Button>
@@ -91,7 +93,14 @@ function OpenMatches({ coords }: { coords: Coordinates }) {
           </Button>
         </div>
       </div>
-      <ScreenState {...open} onRetry={open.refetch} isEmpty={(data) => sorted(data).length === 0} emptyMessage="No hay partidas libres cerca de ti ahora mismo.">
+      <ScreenState {...open} onRetry={open.refetch} isEmpty={(data) => sorted(data).length === 0} emptyMessage="No hay partidas libres cerca de ti ahora mismo."
+        emptyImage="/illustrations/pongi-rival.webp"
+        emptyAction={
+          <ButtonLink to={`${paths.newMatch}?mode=open`} icon={Plus}>
+            Publicar mi propia partida
+          </ButtonLink>
+        }
+      >
         {(matches) => (
           <ul className="flex flex-col gap-3">
             {sorted(matches).map((match) => {
@@ -102,7 +111,7 @@ function OpenMatches({ coords }: { coords: Coordinates }) {
                     <div className="min-w-0">
                       <p className="truncate font-bold">{match.player1.name}</p>
                       <p className="text-sm text-muted">
-                        {Math.round(match.player1.ratingGlicko)} ({gap >= 0 ? '+' : ''}
+                        <span className="font-bold text-accent tabular-nums">{Math.round(match.player1.ratingGlicko)}</span> ({gap >= 0 ? '+' : ''}
                         {gap} respecto a ti) · {FORMAT_LABELS[match.format]}
                       </p>
                     </div>
@@ -116,11 +125,6 @@ function OpenMatches({ coords }: { coords: Coordinates }) {
           </ul>
         )}
       </ScreenState>
-      {open.data && sorted(open.data).length === 0 && (
-        <Link to={`${paths.newMatch}?mode=open`} className="self-center rounded-xl bg-brand px-4 py-2.5 text-sm font-bold hover:bg-brand-dark">
-          Publicar mi propia partida
-        </Link>
-      )}
     </div>
   );
 }

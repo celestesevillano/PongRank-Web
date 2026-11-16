@@ -52,7 +52,7 @@ export function ManualScoreForm({ format, myName, opponentName, player1IsMe, sub
               <span className="text-muted">Set {index + 1}</span>
               <ScoreInput label={`Set ${index + 1}, puntos de ${myName}`} value={set.mine} invalid={setError !== null} onChange={(v) => update(index, 'mine', v)} />
               <ScoreInput label={`Set ${index + 1}, puntos de ${opponentName}`} value={set.theirs} invalid={setError !== null} onChange={(v) => update(index, 'theirs', v)} />
-              {setError && <p className="col-span-3 text-right text-xs text-red-400">{setError}</p>}
+              {setError && <p className="col-span-3 text-right text-xs text-brand">{setError}</p>}
             </div>
           );
         })}
@@ -61,11 +61,11 @@ export function ManualScoreForm({ format, myName, opponentName, player1IsMe, sub
         <Button type="button" variant="secondary" disabled={drafts.length >= MAX_SETS[format]} onClick={() => setDrafts((list) => [...list, emptySet()])}>
           Añadir set
         </Button>
-        <Button type="button" variant="ghost" disabled={drafts.length <= SETS_TO_WIN[format]} onClick={() => setDrafts((list) => list.slice(0, -1))}>
+        <Button type="button" variant="text" disabled={drafts.length <= SETS_TO_WIN[format]} onClick={() => setDrafts((list) => list.slice(0, -1))}>
           Quitar set
         </Button>
       </div>
-      {matchError && <p className="text-sm text-red-400" role="alert">{matchError}</p>}
+      {matchError && <p className="text-sm text-brand" role="alert">{matchError}</p>}
       <Button type="submit" loading={submitting} disabled={!canSubmit}>
         Enviar resultado
       </Button>
@@ -82,7 +82,7 @@ function ScoreInput({ label, value, invalid, onChange }: { label: string; value:
       value={value}
       placeholder="0"
       onChange={(event) => onChange(event.target.value)}
-      className={`w-full rounded-xl border bg-black px-3 py-2 text-center text-lg font-bold tabular-nums outline-none focus:border-brand ${invalid ? 'border-brand' : 'border-line'}`}
+      className={`w-full rounded-xl border bg-black px-3 py-2 text-center text-lg font-bold tabular-nums outline-none focus:border-accent ${invalid ? 'border-brand' : 'border-line'}`}
     />
   );
 }

@@ -38,7 +38,7 @@ export function OpponentPicker({ options, loading, error, selectedId, emptyMessa
   if (error) {
     return (
       <div className="flex flex-col items-start gap-2">
-        <p className="text-sm text-red-300">{error.message}</p>
+        <p className="text-sm text-brand">{error.message}</p>
         <Button variant="secondary" onClick={onRetry}>
           Reintentar
         </Button>
@@ -59,7 +59,7 @@ export function OpponentPicker({ options, loading, error, selectedId, emptyMessa
         value={query}
         placeholder="Buscar por nombre"
         onChange={(event) => setQuery(event.target.value)}
-        className="rounded-xl border border-line bg-black px-3 py-2.5 text-white outline-none focus:border-brand"
+        className="rounded-xl border border-line bg-black px-3 py-2.5 text-white outline-none focus:border-accent"
       />
       {visible.length === 0 ? (
         <p className="py-3 text-sm text-muted">Nadie coincide con “{query.trim()}”.</p>
@@ -75,7 +75,7 @@ export function OpponentPicker({ options, loading, error, selectedId, emptyMessa
                   className={`flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-left text-sm transition ${selected ? 'border-brand bg-brand/15' : 'border-line hover:border-muted'}`}
                 >
                   <span className="truncate font-bold">{option.name}</span>
-                  <span className="shrink-0 text-muted tabular-nums">{Math.round(option.ratingGlicko)}</span>
+                  <span className="shrink-0 font-bold text-accent tabular-nums">{Math.round(option.ratingGlicko)}</span>
                 </button>
               </li>
             );

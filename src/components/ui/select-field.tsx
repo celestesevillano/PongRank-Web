@@ -18,7 +18,7 @@ export function SelectField<T extends string>({ label, value, options, onChange 
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value as T)}
-        className="rounded-xl border border-line bg-black px-3 py-2 text-white outline-none focus:border-brand"
+        className="min-h-11 rounded-xl border border-line bg-black px-3 text-white outline-none focus:border-accent"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>

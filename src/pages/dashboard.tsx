@@ -1,7 +1,9 @@
+import { ChevronRight, MapPin, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
 import { MatchCard } from '@/components/matches/match-card';
+import { ButtonLink } from '@/components/ui/button-link';
 import { Card } from '@/components/ui/card';
 import { StatCard } from '@/components/ui/stat-card';
 import { useSession } from '@/context/session';
@@ -38,17 +40,19 @@ export default function DashboardPage() {
             <strong>{toReview.length === 1 ? 'Tienes un resultado por confirmar' : `Tienes ${toReview.length} resultados por confirmar`}</strong>
             <span className="text-muted"> · Tu rival ya registró el marcador.</span>
           </span>
-          <span className="shrink-0 text-sm font-bold text-brand">Revisar →</span>
+          <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-accent">
+            Revisar <ChevronRight aria-hidden className="size-4" />
+          </span>
         </Link>
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Link to={paths.newMatch} className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold hover:bg-brand-dark">
+        <ButtonLink to={paths.newMatch} icon={Plus}>
           Crear partida
-        </Link>
-        <Link to={paths.findMatch} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-bold hover:bg-line">
+        </ButtonLink>
+        <ButtonLink to={paths.findMatch} variant="secondary" icon={MapPin}>
           Buscar partida cercana
-        </Link>
+        </ButtonLink>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">

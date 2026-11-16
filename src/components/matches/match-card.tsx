@@ -23,7 +23,7 @@ export function MatchCard({ match, playerId }: { match: MatchResponse; playerId:
         </div>
         {awaitingMyReview && <p className="mt-1 text-sm font-bold text-brand">Te toca confirmar el resultado</p>}
         {ratingDelta !== null && (
-          <p className={`mt-1 text-sm font-bold ${ratingDelta >= 0 ? 'text-emerald-400' : 'text-brand'}`}>
+          <p className={`mt-1 text-sm font-bold ${ratingDelta >= 0 ? 'text-success' : 'text-brand'}`}>
             {ratingDelta >= 0 ? '+' : ''}
             {Math.round(ratingDelta)} rating
           </p>

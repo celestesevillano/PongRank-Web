@@ -40,17 +40,17 @@ export function DisputeDialog({ open, loading, onSubmit, onCancel }: DisputeDial
           aria-invalid={touched && error ? true : undefined}
           onChange={(event) => setReason(event.target.value)}
           onBlur={() => setTouched(true)}
-          className={`resize-none rounded-xl border bg-black px-3 py-2.5 text-white outline-none focus:border-brand ${touched && error ? 'border-brand' : 'border-line'}`}
+          className={`resize-none rounded-xl border bg-black px-3 py-2.5 text-white outline-none focus:border-accent ${touched && error ? 'border-brand' : 'border-line'}`}
         />
         <div className="flex justify-between text-xs">
-          <span className="text-red-400">{touched ? error : null}</span>
+          <span className="text-brand">{touched ? error : null}</span>
           <span className="text-muted">
             {reason.length}/{MAX_REASON}
           </span>
         </div>
         <div className="flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={onCancel} disabled={loading}>
-            Volver
+            Cancelar
           </Button>
           <Button type="submit" loading={loading}>
             Enviar disputa

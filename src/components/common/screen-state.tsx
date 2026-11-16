@@ -11,10 +11,12 @@ type ScreenStateProps<T> = {
   onRetry: () => void;
   isEmpty?: (data: T) => boolean;
   emptyMessage?: string;
+  emptyImage?: string;
+  emptyAction?: ReactNode;
   children: (data: T) => ReactNode;
 };
 
-export function ScreenState<T>({ loading, error, data, onRetry, isEmpty, emptyMessage = 'Aún no hay nada por aquí.', children }: ScreenStateProps<T>) {
+export function ScreenState<T>({ loading, error, data, onRetry, isEmpty, emptyMessage = 'Aún no hay nada por aquí.', emptyImage, emptyAction, children }: ScreenStateProps<T>) {
   if (loading && data === null) {
     return (
       <div className="flex justify-center py-12">
@@ -37,7 +39,15 @@ export function ScreenState<T>({ loading, error, data, onRetry, isEmpty, emptyMe
   }
 
   if (data === null) return null;
-  if (isEmpty?.(data)) return <p className="py-12 text-center text-muted">{emptyMessage}</p>;
+  if (isEmpty?.(data)) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-10 text-center">
+        {emptyImage && <img src={emptyImage} alt="" className="w-48 max-w-full" loading="lazy" />}
+        <p className="text-muted">{emptyMessage}</p>
+        {emptyAction}
+      </div>
+    );
+  }
 
   return <>{children(data)}</>;
 }

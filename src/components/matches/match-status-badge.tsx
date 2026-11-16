@@ -2,11 +2,11 @@ import type { MatchStatus } from '@/types/api';
 import { STATUS_INFO } from '@/utils/match-status';
 
 const TONE_STYLES = {
-  pending: 'border-amber-400/40 text-amber-300',
-  action: 'border-brand/60 text-brand',
-  success: 'border-emerald-400/40 text-emerald-300',
-  danger: 'border-red-400/60 text-red-300',
-  neutral: 'border-line text-muted',
+  pending: 'border-accent/50 text-accent',
+  action: 'border-brand bg-brand/10 text-brand',
+  success: 'border-success/50 text-success',
+  danger: 'border-gold/60 text-gold',
+  neutral: 'border-line text-faint',
 } as const;
 
 export function MatchStatusBadge({ status }: { status: MatchStatus }) {
