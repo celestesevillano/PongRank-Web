@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { ScreenState } from '@/components/common/screen-state';
@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useToast } from '@/context/toast';
 import { useFetch } from '@/hooks/use-fetch';
+import { paths } from '@/routes/paths';
 import { authService } from '@/services/auth.service';
 import { matchesService } from '@/services/matches.service';
 import type { MatchDetail, SetScore } from '@/types/api';
@@ -26,6 +27,20 @@ type PendingAction = 'confirm' | 'dispute' | 'cancel' | null;
 
 export default function MatchDetailPage() {
   const matchId = Number(useParams().id);
+  if (!Number.isInteger(matchId) || matchId <= 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-12 text-center">
+        <p className="text-muted">Esa partida no existe.</p>
+        <Link to={paths.matches} className="font-bold text-brand hover:underline">
+          Ver mis partidas
+        </Link>
+      </div>
+    );
+  }
+  return <MatchLoader matchId={matchId} />;
+}
+
+function MatchLoader({ matchId }: { matchId: number }) {
   const match = useFetch((signal) => matchesService.get(matchId, signal), [matchId]);
 
   return (

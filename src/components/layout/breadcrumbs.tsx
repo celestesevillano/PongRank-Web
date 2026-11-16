@@ -25,7 +25,7 @@ export function Breadcrumbs() {
         {segments.map((segment, index) => {
           const to = `/${segments.slice(0, index + 1).join('/')}`;
           const isLast = index === segments.length - 1;
-          const label = LABELS[segment] ?? `#${segment}`;
+          const label = LABELS[segment] ?? (segments[index - 1] === 'matches' ? `Partida #${segment}` : `#${segment}`);
           return (
             <li key={to} className="flex items-center gap-1.5">
               <span aria-hidden>/</span>

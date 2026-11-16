@@ -7,7 +7,9 @@ import { StatCard } from '@/components/ui/stat-card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { communitiesService } from '@/services/communities.service';
+import { paths } from '@/routes/paths';
 import { matchesService } from '@/services/matches.service';
+import { matchPerspective } from '@/utils/match-status';
 
 export default function DashboardPage() {
   const { player } = useSession();
@@ -20,11 +22,34 @@ export default function DashboardPage() {
     return { community: first, ranking: await communitiesService.ranking(first.id, { page: 0, size: 5 }, signal) };
   }, [playerId]);
 
+  const toReview = (active.data ?? []).filter((match) => matchPerspective(match, playerId).awaitingMyReview);
   const position = community.data?.ranking.content.find((entry) => entry.playerId === playerId)?.position;
 
   return (
     <div className="flex flex-col gap-6">
       <h1 className="text-2xl font-extrabold">Hola, {player!.name.split(' ')[0]}</h1>
+
+      {toReview.length > 0 && (
+        <Link
+          to={paths.matchDetail(toReview[0].id)}
+          className="flex items-center justify-between gap-3 rounded-2xl border border-brand/60 bg-brand/10 px-4 py-3 transition hover:bg-brand/20"
+        >
+          <span className="text-sm">
+            <strong>{toReview.length === 1 ? 'Tienes un resultado por confirmar' : `Tienes ${toReview.length} resultados por confirmar`}</strong>
+            <span className="text-muted"> · Tu rival ya registró el marcador.</span>
+          </span>
+          <span className="shrink-0 text-sm font-bold text-brand">Revisar →</span>
+        </Link>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        <Link to={paths.newMatch} className="rounded-xl bg-brand px-4 py-2.5 text-sm font-bold hover:bg-brand-dark">
+          Crear partida
+        </Link>
+        <Link to={paths.findMatch} className="rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-bold hover:bg-line">
+          Buscar partida cercana
+        </Link>
+      </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard label="Rating" value={Math.round(player!.ratingGlicko)} />

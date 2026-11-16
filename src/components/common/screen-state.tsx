@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 import { Spinner } from '@/components/common/spinner';
 import { Button } from '@/components/ui/button';
-import type { ApiError } from '@/utils/api-error';
+import { isRetryable, type ApiError } from '@/utils/api-error';
 
 type ScreenStateProps<T> = {
   loading: boolean;
@@ -27,9 +27,11 @@ export function ScreenState<T>({ loading, error, data, onRetry, isEmpty, emptyMe
     return (
       <div className="flex flex-col items-center gap-3 py-12 text-center">
         <p className="text-muted">{error.message}</p>
-        <Button variant="secondary" onClick={onRetry}>
-          Reintentar
-        </Button>
+        {isRetryable(error) && (
+          <Button variant="secondary" onClick={onRetry}>
+            Reintentar
+          </Button>
+        )}
       </div>
     );
   }
