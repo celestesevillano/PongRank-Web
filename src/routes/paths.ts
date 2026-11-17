@@ -9,6 +9,7 @@ export const paths = {
   registerCommunity: '/register/community',
   forgotPassword: '/forgot-password',
   communities: '/communities',
+  social: '/social',
   ranking: '/ranking',
   matches: '/matches',
   newMatch: '/matches/new',

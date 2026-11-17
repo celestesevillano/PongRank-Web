@@ -1,5 +1,5 @@
 import { http } from '@/services/http';
-import type { Club, ClubMembership } from '@/types/api';
+import type { Club, ClubMembership, PageParams } from '@/types/api';
 import { normalizePage } from '@/utils/pagination';
 
 const PAGE_SIZE = 100;
@@ -15,9 +15,16 @@ async function allPages<T>(url: string, signal?: AbortSignal) {
 }
 
 export const clubsService = {
+  search: (params: PageParams & { name?: string }, signal?: AbortSignal) =>
+    http.get('/clubs', { params, signal }).then(({ data }) => normalizePage<Club>(data)),
+
   managed: (signal?: AbortSignal) => http.get<Club[]>('/clubs/me', { signal }).then((r) => r.data),
 
   memberships: (playerId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/players/${playerId}`, signal),
 
   members: (clubId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/members`, signal),
+
+  requestMembership: (clubId: number) => http.post('/club-memberships', { clubId }).then((r) => r.data),
+
+  leave: (id: number) => http.patch(`/club-memberships/${id}/leave`).then((r) => r.data),
 };
