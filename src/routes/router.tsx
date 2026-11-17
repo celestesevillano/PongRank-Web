@@ -13,7 +13,6 @@ const RegisterLevelPage = lazy(() => import('@/pages/register-level'));
 const RegisterCommunityPage = lazy(() => import('@/pages/register-community'));
 const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
-const CommunitiesPage = lazy(() => import('@/pages/communities'));
 const SocialPage = lazy(() => import('@/pages/social'));
 const CommunityDetailPage = lazy(() => import('@/pages/community-detail'));
 const ClubDetailPage = lazy(() => import('@/pages/club-detail'));
