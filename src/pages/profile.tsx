@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TextField } from '@/components/ui/text-field';
+import { usePlan } from '@/context/plan';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { matchesService } from '@/services/matches.service';
@@ -14,6 +15,7 @@ import { validateName } from '@/utils/validation';
 
 export default function ProfilePage() {
   const { player, updateLocalPlayer } = useSession();
+  const { plan } = usePlan();
   const [editing, setEditing] = useState(false);
   const [showPlan, setShowPlan] = useState(false);
   const [name, setName] = useState(player!.name);
@@ -53,7 +55,7 @@ export default function ProfilePage() {
         <div className="relative overflow-hidden rounded-2xl border border-[#9D742F] bg-[#1A1408] p-6">
           <img src="/illustrations/pongrank-plan-pro.webp" alt="" className="pointer-events-none absolute right-0 bottom-0 h-full w-1/3 object-contain opacity-80" />
           <p className="text-xs font-bold text-gold">PLAN ACTUAL</p>
-          <p className="text-2xl font-extrabold">Gratis</p>
+          <p className="text-2xl font-extrabold">{plan?.plan === 'ENTERPRISE' ? 'Enterprise' : plan?.plan === 'PRO' ? 'Pro' : 'Gratis'}</p>
           <p className="mt-1 text-sm text-muted">Los planes se gestionan desde la app móvil.</p>
         </div>
         <Card>
@@ -73,14 +75,12 @@ export default function ProfilePage() {
         </Link>
       </header>
 
-      <Card className="flex items-center gap-4">
-        <div className="flex size-16 items-center justify-center rounded-full bg-surface text-2xl font-extrabold text-accent">
-          {player!.name.slice(0, 1).toUpperCase()}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-xl font-extrabold">{player!.name}</p>
-          <p className="truncate text-sm text-muted">{player!.email}</p>
-          {player!.categoryFdptm && <p className="mt-1 text-xs font-bold text-gold">FDPTM {player!.categoryFdptm}</p>}
+      <Card className="overflow-hidden p-0">
+        <div className="relative bg-gradient-to-r from-[#0B2229] to-[#12323A] p-5">
+          <img src="/brand/pongrank-paddle.webp" alt="" className="absolute top-4 right-6 h-10" />
+          <div className="flex size-16 items-center justify-center rounded-full border-2 border-accent text-xl font-black text-accent">{player!.name.slice(0, 2).toUpperCase()}</div>
+          <p className="mt-3 text-2xl font-extrabold">{player!.name}</p>
+          <p className="text-sm text-muted">@{player!.username ?? player!.email.split('@')[0]}</p>
         </div>
       </Card>
 
@@ -99,7 +99,7 @@ export default function ProfilePage() {
         <button type="button" onClick={() => setShowPlan(true)} className="flex min-h-12 items-center gap-3 rounded-xl border border-line bg-surface px-4 text-left">
           <Layers className="size-5 text-accent" />
           <span className="flex-1 font-bold">Mi plan</span>
-          <span className="text-sm text-muted">Gratis</span>
+          <span className="text-sm font-bold text-accent">{plan?.plan === 'ENTERPRISE' ? 'Enterprise' : plan?.plan === 'PRO' ? 'Pro' : 'Gratis'}</span>
           <ChevronRight className="size-4 text-muted" />
         </button>
       </div>
