@@ -1,4 +1,4 @@
-import { ChevronRight, Plus, Search, Send, UserPlus, Users, X } from 'lucide-react';
+import { ChevronRight, Plus, Search, Send, Shield, UserPlus, Users, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
@@ -13,8 +13,8 @@ import { communitiesService, type CommunityCreateInput } from '@/services/commun
 import { friendOf, friendshipsService } from '@/services/friendships.service';
 import { playersService } from '@/services/players.service';
 import type { Club, ClubMembership, CommunityResponse, Friendship, PlayerSummary } from '@/types/api';
-import { COMMUNITY_TYPE_LABELS } from '@/utils/community-types';
-import { CREATABLE_COMMUNITY_TYPES, COMMUNITY_TYPE_LABELS, type CommunityType } from '@/utils/community-types';
+import { COMMUNITY_TYPE_LABELS, CREATABLE_COMMUNITY_TYPES, type CommunityType } from '@/utils/community-types';
+import { toApiError } from '@/utils/api-error';
 
 type Segment = 'communities' | 'clubs' | 'pongmigos';
 
