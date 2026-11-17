@@ -134,8 +134,8 @@ function ClubsTab({ page }: { page: ReturnType<typeof usePaginated<ClubReview>> 
               </div>
             )}
             <div className="flex gap-2">
-              <Button onClick={() => setConfirming(true)}>Aprobar</Button>
-              <Button variant="secondary" onClick={() => setRejecting(true)}>Rechazar</Button>
+              <Button className="flex-1" onClick={() => setConfirming(true)}>Aprobar</Button>
+              <Button className="flex-1" variant="secondary" onClick={() => setRejecting(true)}>Rechazar</Button>
             </div>
           </div>
         )}
@@ -227,8 +227,8 @@ function FederatedTab({ page }: { page: ReturnType<typeof usePaginated<AdminFede
               ))}
             </div>
             <div className="flex gap-2">
-              <Button loading={busy} disabled={!entry} onClick={verify}>Verificar</Button>
-              <Button variant="secondary" onClick={() => setRejecting(true)}>Rechazar</Button>
+              <Button className="flex-1" loading={busy} disabled={!entry} onClick={verify}>Verificar</Button>
+              <Button className="flex-1" variant="secondary" onClick={() => setRejecting(true)}>Rechazar</Button>
             </div>
           </div>
         )}
