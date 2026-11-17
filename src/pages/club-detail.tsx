@@ -85,7 +85,12 @@ export default function ClubDetailPage() {
             )}
             <section className="flex flex-col gap-2">
               <h2 className="flex items-center gap-2 font-bold"><Megaphone className="size-4" /> Anuncios</h2>
-              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : (announcements.data ?? []).map((item) => (
+              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? (
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <img src="/illustrations/club-vacio-avisos.webp" alt="" className="w-32" />
+                  <p className="text-sm text-muted">Sin anuncios.</p>
+                </div>
+              ) : (announcements.data ?? []).map((item) => (
                 <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>
               ))}
             </section>

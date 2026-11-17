@@ -23,6 +23,7 @@ const PublicPlayerPage = lazy(() => import('@/pages/public-player'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
+const TournamentsPage = lazy(() => import('@/pages/tournaments'));
 const NewMatchPage = lazy(() => import('@/pages/new-match'));
 const FindMatchPage = lazy(() => import('@/pages/find-match'));
 const MatchDetailPage = lazy(() => import('@/pages/match-detail'));
@@ -68,6 +69,7 @@ export const router = createBrowserRouter([
           { path: '/communities', element: <Navigate to="/social" replace /> },
           { path: '/ranking', element: <RankingPage /> },
           { path: '/matches', element: <MatchesPage /> },
+          { path: '/matches/tournaments', element: withSuspense(<TournamentsPage />) },
           { path: '/matches/new', element: <NewMatchPage /> },
           { path: '/matches/find', element: <FindMatchPage /> },
           { path: '/matches/:id', element: <MatchDetailPage /> },

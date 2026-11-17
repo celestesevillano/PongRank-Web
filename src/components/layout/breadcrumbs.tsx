@@ -10,6 +10,7 @@ const LABELS: Record<string, string> = {
   ranking: 'Ranking',
   communities: 'Social',
   matches: 'Partidas',
+  tournaments: 'Torneos',
   new: 'Crear partida',
   find: 'Buscar partida',
   profile: 'Perfil',
