@@ -17,4 +17,5 @@ export const paths = {
   findMatch: '/matches/find',
   matchDetail: (id: number | string) => `/matches/${id}`,
   profile: '/profile',
+  admin: '/admin',
 } as const;

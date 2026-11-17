@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
+import { AdminRoute } from '@/components/common/admin-route';
 import { PrivateRoute, PublicOnlyRoute } from '@/components/common/private-route';
 import { AppLayout } from '@/components/layout/app-layout';
 import { RegistrationLayout } from '@/context/registration';
@@ -28,6 +29,7 @@ const MatchDetailPage = lazy(() => import('@/pages/match-detail'));
 const StatisticsPage = lazy(() => import('@/pages/statistics'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'));
+const AdminPage = lazy(() => import('@/pages/admin'));
 const NotFoundPage = lazy(() => import('@/pages/not-found'));
 
 const withSuspense = (node: ReactNode) => <Suspense fallback={null}>{node}</Suspense>;
@@ -72,6 +74,7 @@ export const router = createBrowserRouter([
           { path: '/statistics', element: <StatisticsPage /> },
           { path: '/profile', element: <ProfilePage /> },
           { path: '/profile/settings', element: withSuspense(<ProfileSettingsPage />) },
+          { element: <AdminRoute />, children: [{ path: '/admin', element: withSuspense(<AdminPage />) }] },
         ],
       },
     ],

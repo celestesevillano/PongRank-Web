@@ -1,6 +1,7 @@
-import { CircleUser, House, LogOut, MessageCircle, Swords, Trophy, type LucideIcon } from 'lucide-react';
+import { CircleUser, House, LogOut, MessageCircle, ShieldCheck, Swords, Trophy, type LucideIcon } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 
+import { isSystemAdmin } from '@/components/common/admin-route';
 import { useSession } from '@/context/session';
 import { BrandImages } from '@/lib/brand';
 import { paths } from '@/routes/paths';
@@ -17,6 +18,9 @@ const LINKS: NavItem[] = [
 
 export function Navbar() {
   const { player, signOut } = useSession();
+  const links = isSystemAdmin(player?.role)
+    ? [...LINKS, { to: paths.admin, label: 'Admin', Icon: ShieldCheck }]
+    : LINKS;
   const { pathname } = useLocation();
   const inSection = (link: NavItem) => link.section?.some((path) => pathname.startsWith(path)) ?? false;
 
@@ -26,13 +30,16 @@ export function Navbar() {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <img src={BrandImages.wordmark} alt="PongRank" width={116} height={14} className="h-5 w-29 object-contain object-left" />
           <nav aria-label="Principal" className="hidden gap-1 sm:flex">
-            {LINKS.map((link) => (
+            {links.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className="relative rounded-lg px-3 py-1.5 text-sm font-bold">
                 {({ isActive }) => <DesktopLink link={link} active={isActive || inSection(link)} />}
               </NavLink>
             ))}
           </nav>
           <div className="flex items-center gap-3 text-sm">
+            {isSystemAdmin(player?.role) && (
+              <NavLink to={paths.admin} className="sm:hidden" aria-label="Admin"><ShieldCheck className="size-5" /></NavLink>
+            )}
             <span className="hidden max-w-36 truncate text-muted md:inline">{player?.name}</span>
             <button type="button" onClick={() => void signOut()} className="flex items-center gap-1.5 font-bold text-brand hover:underline">
               <LogOut aria-hidden className="size-4" />

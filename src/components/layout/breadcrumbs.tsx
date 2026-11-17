@@ -6,6 +6,7 @@ const LABELS: Record<string, string> = {
   club: 'Club',
   player: 'Jugador',
   settings: 'Ajustes',
+  admin: 'Administración',
   ranking: 'Ranking',
   communities: 'Social',
   matches: 'Partidas',
