@@ -1,4 +1,5 @@
 import { ChevronRight, Plus, Search, Send, UserPlus, Users, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
@@ -124,10 +125,10 @@ function CommunitiesSegment({ query }: { query: string }) {
           <div className="flex flex-col gap-3">
             {filtered.map((community) => (
               <Card key={community.id} className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
+                <Link to={`/social/community/${community.id}`} className="min-w-0">
                   <p className="truncate font-bold">{community.name}</p>
                   <p className="text-xs text-muted">{community.memberCount} {community.memberCount === 1 ? 'miembro' : 'miembros'}</p>
-                </div>
+                </Link>
                 <Button variant="secondary" disabled={pendingId === community.id} onClick={() => setLeaving(community)}>Salir</Button>
               </Card>
             ))}
@@ -197,8 +198,10 @@ function ClubsSegment({ query }: { query: string }) {
           <div className="flex flex-col gap-3">
             {list.map((club) => (
               <Card key={club.id}>
-                <p className="truncate font-bold">{club.name}</p>
-                <p className="text-xs text-muted">{club.status === 'PENDING' ? 'Registro en revisión' : club.status === 'APPROVED' ? 'Aprobado' : club.status ?? 'Club'}</p>
+                <Link to={`/social/club/${club.id}`}>
+                  <p className="truncate font-bold">{club.name}</p>
+                  <p className="text-xs text-muted">{club.status === 'PENDING' ? 'Registro en revisión' : club.status === 'APPROVED' ? 'Aprobado' : club.status ?? 'Club'}</p>
+                </Link>
               </Card>
             ))}
           </div>
@@ -316,10 +319,10 @@ function PlayerRow({ player, action }: { player: PlayerSummary; action: ReactNod
     <Card className="flex items-center justify-between gap-3">
       <div className="flex min-w-0 items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface text-accent"><Users aria-hidden className="size-5" /></div>
-        <div className="min-w-0">
+        <Link to={`/social/player/${player.id}`} className="min-w-0">
           <p className="truncate font-bold">{player.name}</p>
           <p className="text-xs text-muted">{Math.round(player.ratingGlicko)} pts</p>
-        </div>
+        </Link>
       </div>
       {action}
     </Card>
@@ -401,9 +404,4 @@ function CreateCommunity({ onClose, onCreated }: { onClose: () => void; onCreate
     </div>
   );
 }
-        <p className="text-sm text-muted">{message}</p>
-        <Button onClick={onClose}>Aceptar</Button>
-      </div>
-    </div>
-  );
-}
+

@@ -20,6 +20,12 @@ export const clubsService = {
 
   managed: (signal?: AbortSignal) => http.get<Club[]>('/clubs/me', { signal }).then((r) => r.data),
 
+  detail: (id: number, signal?: AbortSignal) =>
+    http.get<Club>(`/clubs/${id}`, { signal }).then((r) => r.data),
+
+  announcements: (clubId: number, signal?: AbortSignal) =>
+    http.get(`/clubs/${clubId}/announcements`, { signal }).then(({ data }) => data as { id: number; title: string; body: string; authorName: string; createdAt: string }[]),
+
   memberships: (playerId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/players/${playerId}`, signal),
 
   members: (clubId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/members`, signal),

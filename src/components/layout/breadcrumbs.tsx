@@ -2,6 +2,10 @@ import { Link, useLocation } from 'react-router-dom';
 
 const LABELS: Record<string, string> = {
   social: 'Social',
+  community: 'Comunidad',
+  club: 'Club',
+  player: 'Jugador',
+  settings: 'Ajustes',
   ranking: 'Ranking',
   communities: 'Social',
   matches: 'Partidas',
