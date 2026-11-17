@@ -16,12 +16,12 @@ export function PrivateRoute() {
   }
 
   if (isAuthenticated) return <Outlet />;
-  return location.pathname === '/' ? <Navigate to="/welcome" replace /> : <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  return <Navigate to="/" replace state={{ from: location.pathname }} />;
 }
 
 export function PublicOnlyRoute() {
   const { isAuthenticated, isLoading, onboardingPending } = useSession();
   if (isLoading) return null;
   if (!isAuthenticated) return <Outlet />;
-  return <Navigate to={onboardingPending ? '/register/community' : '/'} replace />;
+  return <Navigate to={onboardingPending ? '/register/community' : '/home'} replace />;
 }

@@ -26,7 +26,7 @@ export function Breadcrumbs() {
     <nav aria-label="Breadcrumb" className="border-b border-line">
       <ol className="mx-auto flex max-w-5xl flex-wrap items-center gap-1.5 px-4 py-2.5 text-sm text-muted">
         <li>
-          <Link to="/" className="hover:text-white">Inicio</Link>
+          <Link to="/home" className="hover:text-white">Inicio</Link>
         </li>
         {segments.map((segment, index) => {
           const to = `/${segments.slice(0, index + 1).join('/')}`;

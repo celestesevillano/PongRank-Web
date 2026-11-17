@@ -29,10 +29,6 @@ export default function WelcomePage() {
           <img src={BrandImages.introPaddle} alt="" className="h-24" />
           <h1 className="max-w-2xl text-4xl font-black italic sm:text-5xl">El ranking de tenis de mesa de tu comunidad</h1>
           <p className="max-w-xl text-lg text-muted">PongRank une partidas, ranking y amigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <ButtonLink to={paths.register}>Crear cuenta</ButtonLink>
-            <ButtonLink to={paths.login} variant="secondary">Iniciar sesión</ButtonLink>
-          </div>
         </section>
 
         <section className="grid gap-4 sm:grid-cols-3">
