@@ -24,6 +24,7 @@ export default function CommunityDetailPage() {
   const [editing, setEditing] = useState(false);
   const [transferring, setTransferring] = useState(false);
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
 
   const isMember = members.data?.content.some((m) => m.playerId === player?.id);
@@ -66,7 +67,7 @@ export default function CommunityDetailPage() {
               </div>
               {isAdmin && (
                 <div className="flex gap-2">
-                  <Button variant="secondary" icon={Pencil} onClick={() => { setName(community.name); setEditing(true); }}>Editar</Button>
+                  <Button variant="secondary" icon={Pencil} onClick={() => { setName(community.name); setDescription(community.description ?? ''); setEditing(true); }}>Editar</Button>
                   <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
                 </div>
               )}
@@ -92,7 +93,8 @@ export default function CommunityDetailPage() {
             {editing && (
               <Card className="flex flex-col gap-2">
                 <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3 outline-none focus:border-accent" />
-                <div className="flex gap-2"><Button onClick={save}>Guardar</Button><Button variant="secondary" onClick={() => setEditing(false)}>Cancelar</Button></div>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2" />
+                <div className="flex gap-2"><Button onClick={async () => { await communitiesService.update(communityId, { name, description }); setEditing(false); detail.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setEditing(false)}>Cancelar</Button></div>
               </Card>
             )}
             <section className="flex flex-col gap-2">
