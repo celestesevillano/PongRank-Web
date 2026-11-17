@@ -1,6 +1,7 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
+import { AdminRoute } from '@/components/common/admin-route';
 import { HomeGate } from '@/routes/home-gate';
 import { PrivateRoute, PublicOnlyRoute } from '@/components/common/private-route';
 import { AppLayout } from '@/components/layout/app-layout';
