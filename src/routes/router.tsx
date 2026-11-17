@@ -26,6 +26,7 @@ const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
 const TournamentsPage = lazy(() => import('@/pages/tournaments'));
 const CreateTournamentPage = lazy(() => import('@/pages/create-tournament'));
+const BracketPage = lazy(() => import('@/pages/bracket'));
 const AccountPage = lazy(() => import('@/pages/account'));
 const PrivacyPage = lazy(() => import('@/pages/privacy'));
 const NewMatchPage = lazy(() => import('@/pages/new-match'));
