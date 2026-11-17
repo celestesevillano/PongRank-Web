@@ -95,7 +95,6 @@ function CommunitiesSegment({ query }: { query: string }) {
     const q = query.trim().toLowerCase();
     return q ? list.filter((c) => c.name.toLowerCase().includes(q)) : list;
   }, [mine.data, query]);
-  const active = filtered.filter((c) => !c.status || c.status === 'ACTIVE');
   const archived = (mine.data ?? []).filter((c) => c.status === 'DELETED' || c.status === 'ARCHIVED');
 
   const run = async (community: CommunityResponse, action: () => Promise<unknown>) => {
