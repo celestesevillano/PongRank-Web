@@ -148,3 +148,14 @@ export type LiveMatchState = {
 };
 
 export type LiveMatchAction = 'READY' | 'POINT' | 'UNDO';
+
+export type Club = { id: number; name: string; address: string };
+
+export type ClubMembership = {
+  id: number;
+  clubId: number;
+  clubName: string;
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'CANCELLED' | 'LEFT';
+  role: 'CLUB_ADMIN' | 'MEMBER';
+  player: PlayerSummary | null;
+};
