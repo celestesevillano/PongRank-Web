@@ -59,11 +59,10 @@ export default function WelcomePage() {
             <p className="max-w-xl text-lg text-muted">PongRank une partidas, ranking y Pongmigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
             <div className="flex flex-wrap items-center gap-3">
               <ButtonLink to={paths.register}>Empezar gratis</ButtonLink>
-              <ButtonLink to={paths.login} variant="secondary">Iniciar sesión</ButtonLink>
             </div>
           </div>
           <div className="flex justify-center">
-            <img src={BrandImages.introPaddle} alt="" className="h-64 drop-shadow-[0_0_60px_rgba(232,38,47,0.35)] sm:h-80" />
+            <img src="/illustrations/landing/landing-hero.webp" alt="Pongi y Ranky jugando una partida de tenis de mesa" className="w-full max-w-xl drop-shadow-[0_0_60px_rgba(232,38,47,0.3)]" />
           </div>
         </section>
 
@@ -76,6 +75,18 @@ export default function WelcomePage() {
               <p className="mt-1 text-muted">{text}</p>
             </article>
           ))}
+        </section>
+
+        {/* Comunidad */}
+        <section className="relative grid items-center gap-10 lg:grid-cols-2">
+          <Halo color="cyan" className="top-0 left-0 size-96" />
+          <div className="flex justify-center">
+            <img src="/illustrations/landing/landing-comunidades.webp" alt="Cuatro amigos revisando el ranking de su grupo junto a una mesa" className="w-full max-w-lg" loading="lazy" />
+          </div>
+          <div className="flex flex-col items-start gap-4">
+            <h2 className="text-3xl font-black sm:text-4xl">Encuentra con quién jugar</h2>
+            <p className="text-muted">Únete a comunidades y clubes, agrega Pongmigos y mira tu posición en el ranking de tu grupo. PongRank te conecta con jugadores reales de tenis de mesa.</p>
+          </div>
         </section>
 
         {/* Planes */}
@@ -97,7 +108,7 @@ export default function WelcomePage() {
                     <img src={art.image} alt="" className="aspect-[3/2] w-full rounded-xl object-cover" loading="lazy" />
                   ) : (
                     <div className="flex aspect-[3/2] w-full items-center justify-center rounded-xl border border-line bg-black">
-                      <img src={BrandImages.emblem} alt="" className="h-20 opacity-90" loading="lazy" />
+                      <img src="/illustrations/landing/landing-plan-free.webp" alt="" className="size-full rounded-xl object-cover" loading="lazy" />
                     </div>
                   )}
                   <div>
@@ -134,7 +145,7 @@ export default function WelcomePage() {
             </ul>
           </div>
           <div className="flex justify-center">
-            <img src="/illustrations/home/pongrank-home-coach.webp" alt="" className="h-64 w-64 object-contain sm:h-72 sm:w-72" loading="lazy" />
+            <img src="/illustrations/landing/landing-coach.webp" alt="" className="max-h-80 w-auto object-contain" loading="lazy" />
           </div>
         </section>
 
@@ -142,20 +153,19 @@ export default function WelcomePage() {
         <section id="clubes" className="relative grid scroll-mt-24 items-center gap-10 lg:grid-cols-2">
           <Halo color="red" className="bottom-0 left-0 size-96" />
           <div className="order-2 flex justify-center lg:order-1">
-            <img src="/illustrations/partidas/partidas-tournament.webp" alt="" className="h-64 w-64 object-contain sm:h-72 sm:w-72" loading="lazy" />
+            <img src="/illustrations/landing/landing-torneos.webp" alt="" className="max-h-96 w-auto object-contain" loading="lazy" />
           </div>
           <div className="order-1 flex flex-col items-start gap-4 lg:order-2">
             <span className="flex items-center gap-2 text-sm font-bold text-brand"><Shield className="size-4" aria-hidden />Plan Enterprise</span>
             <h2 className="text-3xl font-black sm:text-4xl">Tu club y tus torneos</h2>
             <p className="text-muted">Registra tu club, administra a tus socios y organiza torneos con cuadro de eliminación. Tu club propio cuenta como 1 de tus 6 espacios.</p>
-            <ButtonLink to={paths.register} variant="secondary">Crear mi cuenta</ButtonLink>
           </div>
         </section>
 
         {/* Cierre */}
         <section className="relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-3xl border border-line bg-surface px-6 py-14 text-center">
           <Halo color="red" className="top-0 left-1/2 size-80 -translate-x-1/2 -translate-y-1/3" />
-          <img src={BrandImages.wordmark} alt="" className="h-5" />
+          <img src="/illustrations/landing/landing-cierre.webp" alt="" className="w-full max-w-2xl" loading="lazy" />
           <h2 className="text-3xl font-black">¿Listo para subir en el ranking?</h2>
           <ButtonLink to={paths.register}>Empezar gratis</ButtonLink>
         </section>
