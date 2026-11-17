@@ -50,8 +50,7 @@ export default function CommunityDetailPage() {
               </div>
               <div className="flex flex-col gap-1 p-4">
                 <h1 className="text-2xl font-extrabold">{data.name}</h1>
-                <p className="text-sm text-muted">{data.memberCount} {data.memberCount === 1 ? 'miembro' : 'miembros'} · {COMMUNITY_TYPE_LABELS[data.type] ?? data.type}</p>
-                {data.creatorName && <p className="text-sm text-muted">Creada por {data.creatorName}</p>}
+                <p className="text-sm text-muted">{data.memberCount} {data.memberCount === 1 ? 'miembro' : 'miembros'} · {COMMUNITY_TYPE_LABELS[data.communityType] ?? data.communityType}</p>
                 {isAdmin ? <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full border border-[#24616A] px-2 py-0.5 text-xs font-bold text-accent"><Shield className="size-3.5" /> Administrador</span>
                   : isMember && <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full border border-[#1F6B3A] px-2 py-0.5 text-xs font-bold text-[#4ADE80]"><Users className="size-3.5" /> Eres miembro</span>}
               </div>
@@ -67,7 +66,7 @@ export default function CommunityDetailPage() {
               {top.length === 0 ? <p className="text-sm text-muted">Aún no hay ranking.</p> : top.map((entry, index) => (
                 <div key={entry.playerId} className="flex items-center gap-3 py-2">
                   <span className="flex size-7 items-center justify-center rounded-full text-sm font-black" style={{ background: `${MEDALS[index]}22`, color: MEDALS[index] }}>{index + 1}</span>
-                  <span className="flex-1 font-bold">{entry.name}</span>
+                  <span className="flex-1 font-bold">{entry.playerName}</span>
                   <span className="font-extrabold" style={{ color: MEDALS[index] }}>{Math.round(entry.ratingGlicko)}</span>
                 </div>
               ))}
@@ -78,9 +77,9 @@ export default function CommunityDetailPage() {
               <Button icon={Trophy} className="flex-1" onClick={() => navigate('/ranking')}>Ver ranking</Button>
             </div>
 
-            {panel === 'members' && <section className="flex flex-col gap-2">{(members.data?.content ?? []).map((m) => <Card key={m.playerId} className="flex justify-between"><span className="font-bold">{m.name}</span><span className="text-xs text-muted">{m.role === 'COMMUNITY_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</section>}
+            {panel === 'members' && <section className="flex flex-col gap-2">{(members.data?.content ?? []).map((m) => <Card key={m.playerId} className="flex justify-between"><span className="font-bold">{m.playerName}</span><span className="text-xs text-muted">{m.role === 'COMMUNITY_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</section>}
             {panel === 'edit' && <section className="flex flex-col gap-2"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><div className="flex gap-2"><Button onClick={async () => { await communitiesService.update(communityId, { name, description }); setPanel('none'); detail.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></section>}
-            {panel === 'transfer' && <section className="flex flex-col gap-2"><h2 className="font-bold">Transferir administración</h2>{(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((m) => <Button key={m.playerId} variant="secondary" onClick={async () => { await communitiesService.transfer(communityId, m.playerId); setPanel('none'); members.refetch(); }}>{m.name}</Button>)}</section>}
+            {panel === 'transfer' && <section className="flex flex-col gap-2"><h2 className="font-bold">Transferir administración</h2>{(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((m) => <Button key={m.playerId} variant="secondary" onClick={async () => { await communitiesService.transfer(communityId, m.playerId); setPanel('none'); members.refetch(); }}>{m.playerName}</Button>)}</section>}
           </>
         )}
       </ScreenState>
