@@ -75,10 +75,10 @@ export default function SocialPage() {
 function Banner({ kind, subtitle }: { kind: keyof typeof BANNERS; subtitle?: string }) {
   const banner = BANNERS[kind];
   return (
-    <div className="relative h-28 overflow-hidden rounded-2xl border md:h-32" style={{ background: banner.bg, borderColor: banner.border }}>
-      <img src={banner.art} alt="" className="absolute inset-0 h-full w-full object-cover object-right" />
-      <div className="relative flex h-full max-w-[66%] flex-col justify-center gap-1 p-4">
-        <h2 className="text-lg font-extrabold">{banner.title}</h2>
+    <div className="relative flex h-36 items-center overflow-hidden rounded-2xl border md:h-40" style={{ background: banner.bg, borderColor: banner.border }}>
+      <img src={banner.art} alt="" className="pointer-events-none absolute inset-y-0 right-0 h-full w-auto max-w-[55%] object-contain object-right" />
+      <div className="relative z-10 flex h-full max-w-[50%] flex-col justify-center gap-1 p-5">
+        <h2 className="text-lg font-extrabold md:text-xl">{banner.title}</h2>
         {subtitle && <p className="text-sm font-semibold" style={{ color: banner.accent }}>{subtitle}</p>}
       </div>
     </div>
