@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
 import { Card } from '@/components/ui/card';
-import { useDebouncedValue } from '@/hooks/use-debounced-value';
+import { useDebounce } from '@/hooks/use-debounce';
 import { useFetch } from '@/hooks/use-fetch';
 import { clubsService } from '@/services/clubs.service';
 import { communitiesService } from '@/services/communities.service';
@@ -22,7 +22,7 @@ type Filter = (typeof FILTERS)[number]['key'];
 export default function ExplorePage() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
-  const name = useDebouncedValue(query.trim(), 300);
+  const name = useDebounce(query.trim(), 300);
   const ready = name.length >= 2;
   const showPlayers = ready && (filter === 'all' || filter === 'players');
   const showClubs = filter === 'all' || filter === 'clubs';
