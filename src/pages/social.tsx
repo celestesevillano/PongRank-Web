@@ -91,6 +91,7 @@ function CommunitiesSegment({ query }: { query: string }) {
   const { player } = useSession();
   const mine = useFetch((signal) => communitiesService.mine(signal), []);
   const [pendingId, setPendingId] = useState<number | null>(null);
+  const [leaving, setLeaving] = useState<CommunityResponse | null>(null);
   const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
