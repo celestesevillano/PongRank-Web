@@ -26,6 +26,18 @@ export const clubsService = {
   announcements: (clubId: number, signal?: AbortSignal) =>
     http.get(`/clubs/${clubId}/announcements`, { signal }).then(({ data }) => data as { id: number; title: string; body: string; authorName: string; createdAt: string }[]),
 
+  createAnnouncement: (clubId: number, input: { title: string; body: string }) =>
+    http.post(`/clubs/${clubId}/announcements`, input).then((r) => r.data),
+
+  update: (id: number, input: { name?: string; address?: string; description?: string }) =>
+    http.patch<Club>(`/clubs/${id}`, input).then((r) => r.data),
+
+  pending: (clubId: number, signal?: AbortSignal) =>
+    allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/pending`, signal),
+
+  reviewMembership: (id: number, decision: 'approve' | 'reject') =>
+    http.patch(`/club-memberships/${id}/${decision}`).then((r) => r.data),
+
   memberships: (playerId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/players/${playerId}`, signal),
 
   members: (clubId: number, signal?: AbortSignal) => allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/members`, signal),

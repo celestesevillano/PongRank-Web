@@ -87,6 +87,7 @@ function CommunitiesSegment({ query }: { query: string }) {
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [leaving, setLeaving] = useState<CommunityResponse | null>(null);
   const [creating, setCreating] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
@@ -131,6 +132,8 @@ function CommunitiesSegment({ query }: { query: string }) {
         )}
       </ScreenState>
       <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
+      <button type="button" onClick={() => setShowHistory((v) => !v)} className="self-start text-sm font-bold text-muted">Historial de comunidades</button>
+      {showHistory && <p className="text-sm text-muted">Las comunidades archivadas o eliminadas aparecen aquí cuando el servidor las marca como inactivas.</p>}
       {creating && <CreateCommunity onClose={() => setCreating(false)} onCreated={() => { setCreating(false); setNotice('Comunidad creada.'); mine.refetch(); }} />}
       <ConfirmDialog
         open={leaving !== null}
