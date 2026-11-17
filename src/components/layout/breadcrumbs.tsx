@@ -29,11 +29,11 @@ export function Breadcrumbs() {
   const { pathname } = useLocation();
   const segments = pathname.split('/').filter(Boolean);
   const name = useEntityName(segments);
-  if (segments.length === 0) return null;
+  if (segments.length === 0 || (segments.length === 1 && segments[0] === 'home')) return null;
 
   return (
     <nav aria-label="Breadcrumb" className="border-b border-line">
-      <ol className="mx-auto flex max-w-5xl flex-wrap items-center gap-1.5 px-4 py-2.5 text-sm text-muted">
+      <ol className="mx-auto flex max-w-7xl flex-wrap items-center gap-1.5 px-4 py-2.5 text-sm text-muted sm:px-8">
         <li>
           <Link to="/home" className="hover:text-white">Inicio</Link>
         </li>
@@ -69,4 +69,3 @@ function useEntityName(segments: string[]) {
   const player = useFetch((signal) => valid && parent === 'player' ? playersService.summary(id, signal) : Promise.resolve(null), [parent, id]);
   return club.data?.name ?? community.data?.name ?? player.data?.name ?? null;
 }
-
