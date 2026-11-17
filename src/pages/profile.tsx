@@ -80,7 +80,7 @@ export default function ProfilePage() {
           <img src="/brand/pongrank-paddle.webp" alt="" className="absolute top-4 right-6 h-10" />
           <div className="flex size-16 items-center justify-center rounded-full border-2 border-accent text-xl font-black text-accent">{player!.name.slice(0, 2).toUpperCase()}</div>
           <p className="mt-3 text-2xl font-extrabold">{player!.name}</p>
-          <p className="text-sm text-muted">@{player!.username ?? player!.email.split('@')[0]}</p>
+          <p className="text-sm text-muted">@{player!.email.split('@')[0]}</p>
         </div>
       </Card>
 
