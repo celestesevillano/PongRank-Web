@@ -1,5 +1,5 @@
 import { http } from '@/services/http';
-import type { AuthResponse, PlayerResponse } from '@/types/api';
+import type { AuthResponse, Gender, PlayerResponse } from '@/types/api';
 import type { InitialLevel } from '@/utils/levels';
 
 export const authService = {
@@ -7,6 +7,8 @@ export const authService = {
     name: string;
     email: string;
     password: string;
+    birthDate: string;
+    gender: Gender;
     initialLevel?: InitialLevel;
     federatedDeclared?: boolean;
     categoryFdptm?: string;
@@ -16,6 +18,9 @@ export const authService = {
   login: (input: { email: string; password: string }) => http.post<AuthResponse>('/auth/login', input).then((r) => r.data),
 
   forgotPassword: (email: string) => http.post<void>('/auth/forgot-password', { email }).then((r) => r.data),
+
+  resetPassword: (token: string, newPassword: string) =>
+    http.post<void>('/auth/reset-password', { token, newPassword }).then((r) => r.data),
 
   me: (signal?: AbortSignal) => http.get<PlayerResponse>('/auth/me', { signal }).then((r) => r.data),
 };

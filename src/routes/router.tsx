@@ -3,10 +3,16 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { PrivateRoute, PublicOnlyRoute } from '@/components/common/private-route';
 import { AppLayout } from '@/components/layout/app-layout';
+import { RegistrationLayout } from '@/context/registration';
 
+const WelcomePage = lazy(() => import('@/pages/welcome'));
 const LoginPage = lazy(() => import('@/pages/login'));
 const RegisterPage = lazy(() => import('@/pages/register'));
+const RegisterAboutPage = lazy(() => import('@/pages/register-about'));
+const RegisterLevelPage = lazy(() => import('@/pages/register-level'));
+const RegisterCommunityPage = lazy(() => import('@/pages/register-community'));
 const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
+const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
 const CommunitiesPage = lazy(() => import('@/pages/communities'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
@@ -23,14 +29,23 @@ export const router = createBrowserRouter([
   {
     element: <PublicOnlyRoute />,
     children: [
+      { path: '/welcome', element: withSuspense(<WelcomePage />) },
       { path: '/login', element: withSuspense(<LoginPage />) },
-      { path: '/register', element: withSuspense(<RegisterPage />) },
+      {
+        element: <RegistrationLayout />,
+        children: [
+          { path: '/register', element: withSuspense(<RegisterPage />) },
+          { path: '/register/about', element: withSuspense(<RegisterAboutPage />) },
+          { path: '/register/level', element: withSuspense(<RegisterLevelPage />) },
+        ],
+      },
       { path: '/forgot-password', element: withSuspense(<ForgotPasswordPage />) },
     ],
   },
   {
     element: <PrivateRoute />,
     children: [
+      { path: '/register/community', element: withSuspense(<RegisterCommunityPage />) },
       {
         element: <AppLayout />,
         children: [
@@ -46,5 +61,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  { path: '/reset-password', element: withSuspense(<ResetPasswordPage />) },
   { path: '*', element: withSuspense(<NotFoundPage />) },
 ]);

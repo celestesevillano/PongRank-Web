@@ -1,7 +1,12 @@
 export const paths = {
   home: '/',
+  welcome: '/welcome',
+  resetPassword: '/reset-password',
   login: '/login',
   register: '/register',
+  registerAbout: '/register/about',
+  registerLevel: '/register/level',
+  registerCommunity: '/register/community',
   forgotPassword: '/forgot-password',
   communities: '/communities',
   ranking: '/ranking',

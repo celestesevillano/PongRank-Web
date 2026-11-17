@@ -9,7 +9,9 @@ type SessionContextValue = {
   isAuthenticated: boolean;
   player: PlayerResponse | null;
   isLoading: boolean;
-  signInWithAuthResponse: (auth: AuthResponse) => Promise<void>;
+  onboardingPending: boolean;
+  signInWithAuthResponse: (auth: AuthResponse, options?: { onboarding?: boolean }) => Promise<void>;
+  completeOnboarding: () => void;
   signOut: () => Promise<void>;
   updateLocalPlayer: (player: PlayerResponse) => void;
 };
@@ -18,6 +20,7 @@ const SessionContext = createContext<SessionContextValue | undefined>(undefined)
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [player, setPlayer] = useState<PlayerResponse | null>(null);
+  const [onboardingPending, setOnboardingPending] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,17 +46,21 @@ export function SessionProvider({ children }: PropsWithChildren) {
       isAuthenticated: player !== null,
       player,
       isLoading,
-      signInWithAuthResponse: async (auth) => {
+      onboardingPending,
+      signInWithAuthResponse: async (auth, options) => {
         await tokenStore.save(auth.token, auth.refreshToken);
+        setOnboardingPending(options?.onboarding ?? false);
         setPlayer(auth.player);
       },
+      completeOnboarding: () => setOnboardingPending(false),
       signOut: async () => {
         await tokenStore.clear();
+        setOnboardingPending(false);
         setPlayer(null);
       },
       updateLocalPlayer: setPlayer,
     }),
-    [player, isLoading],
+    [player, isLoading, onboardingPending],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;

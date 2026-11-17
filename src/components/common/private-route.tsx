@@ -15,11 +15,13 @@ export function PrivateRoute() {
     );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (isAuthenticated) return <Outlet />;
+  return location.pathname === '/' ? <Navigate to="/welcome" replace /> : <Navigate to="/login" replace state={{ from: location.pathname }} />;
 }
 
 export function PublicOnlyRoute() {
-  const { isAuthenticated, isLoading } = useSession();
+  const { isAuthenticated, isLoading, onboardingPending } = useSession();
   if (isLoading) return null;
-  return isAuthenticated ? <Navigate to="/" replace /> : <Outlet />;
+  if (!isAuthenticated) return <Outlet />;
+  return <Navigate to={onboardingPending ? '/register/community' : '/'} replace />;
 }
