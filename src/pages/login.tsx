@@ -42,7 +42,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AuthLayout title="Bienvenido de vuelta" backTo={paths.welcome}>
+    <AuthLayout title="Bienvenido de vuelta" backTo="/">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
         <AuthInput
           label="Correo"
