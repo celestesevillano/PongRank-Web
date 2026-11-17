@@ -2,7 +2,7 @@ import { ChevronRight, Layers, Pencil, Settings, Trophy } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Button } from '@/components/ui/button';
+import { ScreenState } from '@/components/common/screen-state';
 import { Card } from '@/components/ui/card';
 import { TextField } from '@/components/ui/text-field';
 import { useSession } from '@/context/session';

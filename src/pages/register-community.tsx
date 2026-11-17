@@ -53,7 +53,7 @@ export default function RegisterCommunityPage() {
         <CreateCommunityForm
           onCancel={() => setCreating(false)}
           onCreated={(community) => {
-            toast.show(`Creaste ${community.name}. ¡Invita a tus amigos!`, 'success');
+            toast.show(`Creaste ${community.name}. ¡Invita a tus Pongmigos!`, 'success');
             finish();
           }}
         />

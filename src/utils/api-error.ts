@@ -32,8 +32,9 @@ export function toApiError(error: unknown): ApiError {
       );
     }
     const { status, data } = error.response;
+    const friendly = FRIENDLY[status];
     const serverMessage = status < 500 && typeof data?.message === 'string' ? data.message : null;
-    return new ApiError(serverMessage ?? FRIENDLY[status] ?? 'Algo salió mal de nuestro lado. Intenta de nuevo.', status);
+    return new ApiError(friendly ?? serverMessage ?? 'Algo salió mal de nuestro lado. Intenta de nuevo.', status);
   }
 
   return new ApiError('Ocurrió un error inesperado.', null);
