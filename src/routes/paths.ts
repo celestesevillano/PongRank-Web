@@ -10,6 +10,7 @@ export const paths = {
   forgotPassword: '/forgot-password',
   communities: '/communities',
   ranking: '/ranking',
+  statistics: '/statistics',
   matches: '/matches',
   newMatch: '/matches/new',
   findMatch: '/matches/find',

@@ -159,3 +159,21 @@ export type ClubMembership = {
   role: 'CLUB_ADMIN' | 'MEMBER';
   player: PlayerSummary | null;
 };
+
+export type MembershipPlan = 'FREEMIUM' | 'BASIC' | 'PRO' | 'ENTERPRISE';
+
+export type PaidPlan = Exclude<MembershipPlan, 'FREEMIUM'>;
+
+export type MyPlanResponse = {
+  plan: MembershipPlan;
+  endDate: string | null;
+  coachAccess: boolean;
+  canCreateClub: boolean;
+  maxCommunitiesCreated: number;
+  maxCommunitiesTotal: number;
+  maxClubsTotal: number;
+  maxSpaces?: number;
+  usedSpaces?: number;
+};
+
+export type PaymentPreference = { initPoint: string; preferenceId: string };
