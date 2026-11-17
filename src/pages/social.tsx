@@ -1,4 +1,4 @@
-import { ChevronRight, Plus, Search, Send, UserPlus, Users, X } from 'lucide-react';
+import { ChevronRight, Plus, Search, Send, Shield, UserPlus, Users, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
@@ -13,8 +13,8 @@ import { communitiesService, type CommunityCreateInput } from '@/services/commun
 import { friendOf, friendshipsService } from '@/services/friendships.service';
 import { playersService } from '@/services/players.service';
 import type { Club, ClubMembership, CommunityResponse, Friendship, PlayerSummary } from '@/types/api';
+import { COMMUNITY_TYPE_LABELS, CREATABLE_COMMUNITY_TYPES, type CommunityType } from '@/utils/community-types';
 import { toApiError } from '@/utils/api-error';
-import { CREATABLE_COMMUNITY_TYPES, COMMUNITY_TYPE_LABELS, type CommunityType } from '@/utils/community-types';
 
 type Segment = 'communities' | 'clubs' | 'pongmigos';
 
@@ -123,13 +123,14 @@ function CommunitiesSegment({ query }: { query: string }) {
         {() => (
           <div className="flex flex-col gap-3">
             {filtered.map((community) => (
-              <Card key={community.id} className="flex items-center justify-between gap-3">
-                <Link to={`/social/community/${community.id}`} className="min-w-0">
-                  <p className="truncate font-bold">{community.name}</p>
-                  <p className="text-xs text-muted">{community.memberCount} {community.memberCount === 1 ? 'miembro' : 'miembros'}</p>
-                </Link>
-                <Button variant="secondary" disabled={pendingId === community.id} onClick={() => setLeaving(community)}>Salir</Button>
-              </Card>
+              <Link key={community.id} to={`/social/community/${community.id}`} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 hover:bg-white/5">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#12323A] text-sm font-black text-accent">{community.name.slice(0, 2).toUpperCase()}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-bold">{community.name}</span>
+                  <span className="block text-xs text-muted">{community.memberCount} {community.memberCount === 1 ? 'miembro' : 'miembros'} · {COMMUNITY_TYPE_LABELS[community.communityType] ?? 'Comunidad'}</span>
+                </span>
+                <ChevronRight className="size-4 text-muted" />
+              </Link>
             ))}
           </div>
         )}
@@ -224,12 +225,15 @@ function ClubsSegment({ query }: { query: string }) {
         {(list) => (
           <div className="flex flex-col gap-3">
             {list.map((club) => (
-              <Card key={club.id}>
-                <Link to={`/social/club/${club.id}`}>
-                  <p className="truncate font-bold">{club.name}</p>
-                  <p className="text-xs text-muted">{club.status === 'PENDING' ? 'Registro en revisión' : club.status === 'APPROVED' ? 'Aprobado' : club.status ?? 'Club'}</p>
-                </Link>
-              </Card>
+              <Link key={club.id} to={`/social/club/${club.id}`} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-3 hover:bg-white/5">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[#3A1218] text-sm font-black text-brand">{club.name.slice(0, 2).toUpperCase()}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-bold">{club.name}</span>
+                  <span className="block truncate text-xs text-muted">{club.address}</span>
+                  <span className="mt-1 inline-flex items-center gap-1 rounded-full border border-[#24616A] px-2 py-0.5 text-[11px] font-bold text-accent"><Shield className="size-3" /> Administrador</span>
+                </span>
+                <ChevronRight className="size-4 text-muted" />
+              </Link>
             ))}
           </div>
         )}
