@@ -18,6 +18,7 @@ import { communitiesService } from '@/services/communities.service';
 import { matchesService } from '@/services/matches.service';
 import type { MatchResponse } from '@/types/api';
 import { isRetryable } from '@/utils/api-error';
+import { matchPerspective } from '@/utils/match-status';
 
 const CYAN = '#22D3EE';
 const RANKING_LOOKUP_SIZE = 100;
@@ -33,6 +34,7 @@ export default function DashboardPage() {
   const statisticsLocked = !plan || plan.plan === 'FREEMIUM';
   const firstName = player!.name.trim().split(/\s+/)[0] || 'jugador';
 
+  const active = useFetch((signal) => matchesService.active(playerId, signal), [playerId]);
   const rating = useFetch((signal) => authService.me(signal), [playerId]);
   const standing = useFetch(async (signal) => {
     const [community] = await communitiesService.mine(signal);
@@ -43,6 +45,7 @@ export default function DashboardPage() {
   const recent = useFetch((signal) => matchesService.byPlayer(playerId, { status: 'CONFIRMED', page: 0, size: RECENT_MATCHES, sort: 'lastConfirmed' }, signal), [playerId]);
 
   const currentRating = rating.data?.ratingGlicko ?? player!.ratingGlicko;
+  const toReview = (active.data ?? []).filter((match) => matchPerspective(match, playerId).awaitingMyReview);
   const recentMatches = recent.data?.content ?? [];
 
   return (
@@ -50,6 +53,21 @@ export default function DashboardPage() {
       <h1 className="text-[34px] leading-tight font-extrabold">
         Hola, <span className="text-accent">{firstName}</span>
       </h1>
+
+      {toReview.length > 0 && (
+        <Link
+          to={paths.matchDetail(toReview[0].id)}
+          className="flex items-center justify-between gap-3 rounded-2xl border border-brand/60 bg-brand/10 px-4 py-3 transition hover:bg-brand/20"
+        >
+          <span className="text-sm">
+            <strong>{toReview.length === 1 ? 'Tienes un resultado por confirmar' : `Tienes ${toReview.length} resultados por confirmar`}</strong>
+            <span className="text-muted"> · Tu rival ya registró el marcador.</span>
+          </span>
+          <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-accent">
+            Revisar <ChevronRight aria-hidden className="size-4" />
+          </span>
+        </Link>
+      )}
 
       <section aria-label="Tu rating" className="relative overflow-hidden rounded-2xl border border-[#248997] bg-[#071C23] p-4">
         <CardLighting color={CYAN} court />

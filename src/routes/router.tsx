@@ -14,6 +14,7 @@ const RegisterCommunityPage = lazy(() => import('@/pages/register-community'));
 const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
 const CommunitiesPage = lazy(() => import('@/pages/communities'));
+const SocialPage = lazy(() => import('@/pages/social'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/', element: <DashboardPage /> },
+          { path: '/social', element: withSuspense(<SocialPage />) },
           { path: '/ranking', element: <RankingPage /> },
           { path: '/communities', element: <CommunitiesPage /> },
           { path: '/matches', element: <MatchesPage /> },
