@@ -21,7 +21,13 @@ export function PrivateRoute() {
 
 export function PublicOnlyRoute() {
   const { isAuthenticated, isLoading, onboardingPending } = useSession();
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
   if (!isAuthenticated) return <Outlet />;
   return <Navigate to={onboardingPending ? '/register/community' : '/home'} replace />;
 }
