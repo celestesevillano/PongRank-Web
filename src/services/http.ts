@@ -7,7 +7,7 @@ import { toApiError } from '@/utils/api-error';
 
 type RetriableConfig = InternalAxiosRequestConfig & { _retried?: boolean };
 
-const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh'];
+const AUTH_PATHS = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/forgot-password', '/auth/reset-password'];
 
 export const http = axios.create({
   baseURL: `${API_BASE_URL}/api/v1`,

@@ -25,7 +25,7 @@ export type CommunityResponse = {
   id: number;
   name: string;
   description: string | null;
-  communityType: 'UNIVERSITY' | 'SCHOOL' | 'PUBLIC_PARK' | 'OTHER';
+  communityType: 'UNIVERSITY' | 'SCHOOL' | 'PUBLIC_PARK' | 'PLAY_GROUP' | 'OTHER';
   memberCount: number;
 };
 
@@ -38,6 +38,8 @@ export type Page<T> = {
   first: boolean;
   last: boolean;
 };
+
+export type Gender = 'FEMALE' | 'MALE' | 'PREFER_NOT_TO_SAY';
 
 export type PageParams = { page?: number; size?: number };
 

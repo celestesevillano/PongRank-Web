@@ -1,57 +1,75 @@
+import { Lock, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
+import { AuthInput } from '@/components/auth/auth-input';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { Button } from '@/components/ui/button';
-import { TextField } from '@/components/ui/text-field';
 import { useSession } from '@/context/session';
-import { useToast } from '@/context/toast';
+import { paths } from '@/routes/paths';
 import { authService } from '@/services/auth.service';
 import { toApiError } from '@/utils/api-error';
 import { validateEmail } from '@/utils/validation';
 
 export default function LoginPage() {
   const { signInWithAuthResponse } = useSession();
-  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string | null; password?: string | null }>({});
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const emailError = validateEmail(email);
+  const canSubmit = emailError === null && password.length > 0;
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const next = { email: validateEmail(email), password: password ? null : 'Ingresa tu contraseña.' };
-    setErrors(next);
-    if (next.email || next.password) return;
-
+    setEmailTouched(true);
+    if (!canSubmit) return;
+    setError(null);
     setSubmitting(true);
     try {
       await signInWithAuthResponse(await authService.login({ email: email.trim(), password }));
-      navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true });
+      navigate((location.state as { from?: string } | null)?.from ?? paths.home, { replace: true });
     } catch (err) {
-      toast.show(toApiError(err).message, 'error');
+      const apiError = toApiError(err);
+      setError(apiError.status === 401 ? 'Correo o contraseña incorrectos.' : apiError.message);
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout title="Inicia sesión" subtitle="Vuelve a la mesa y sigue subiendo en el ranking.">
+    <AuthLayout title="Bienvenido de vuelta" backTo={paths.welcome}>
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <TextField label="Correo" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
-        <TextField label="Contraseña" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
-        <Link to="/forgot-password" className="-mt-2 text-right text-sm font-bold text-brand">
+        <AuthInput
+          label="Correo"
+          icon={Mail}
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={() => setEmailTouched(true)}
+          error={emailTouched && email ? emailError : null}
+        />
+        <AuthInput label="Contraseña" icon={Lock} type="password" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} />
+        {error && (
+          <p role="alert" className="text-center text-[15px] text-brand">
+            {error}
+          </p>
+        )}
+        <Button type="submit" loading={submitting} disabled={!canSubmit}>
+          Iniciar sesión
+        </Button>
+        <Link to={paths.forgotPassword} className="self-center rounded-lg px-2 py-1 text-[15px] font-bold text-accent">
           ¿Olvidaste tu contraseña?
         </Link>
-        <Button type="submit" loading={submitting}>
-          Entrar
-        </Button>
-        <p className="text-center text-sm text-muted">
+        <p className="text-center text-[15px] text-muted">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="font-bold text-brand">
-            Regístrate
+          <Link to={paths.register} replace className="font-bold text-accent">
+            Crear cuenta
           </Link>
         </p>
       </form>

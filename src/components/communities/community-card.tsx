@@ -1,13 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { CommunityResponse } from '@/types/api';
-
-const TYPE_LABELS: Record<CommunityResponse['communityType'], string> = {
-  UNIVERSITY: 'Universidad',
-  SCHOOL: 'Colegio',
-  PUBLIC_PARK: 'Parque público',
-  OTHER: 'Otra',
-};
+import { COMMUNITY_TYPE_LABELS } from '@/utils/community-types';
 
 type CommunityCardProps = {
   community: CommunityResponse;
@@ -23,7 +17,7 @@ export function CommunityCard({ community, isMember, busy, onJoin, onLeave }: Co
       <div className="min-w-0">
         <h3 className="truncate font-bold">{community.name}</h3>
         <p className="text-xs text-muted">
-          {TYPE_LABELS[community.communityType]} · {community.memberCount} {community.memberCount === 1 ? 'miembro' : 'miembros'}
+          {COMMUNITY_TYPE_LABELS[community.communityType]} · {community.memberCount} {community.memberCount === 1 ? 'miembro' : 'miembros'}
         </p>
         {community.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{community.description}</p>}
       </div>

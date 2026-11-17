@@ -1,69 +1,83 @@
+import { MailCheck, Mail } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
 
+import { AuthInput } from '@/components/auth/auth-input';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { Button } from '@/components/ui/button';
-import { TextField } from '@/components/ui/text-field';
-import { useToast } from '@/context/toast';
+import { ButtonLink } from '@/components/ui/button-link';
+import { paths } from '@/routes/paths';
 import { authService } from '@/services/auth.service';
 import { toApiError } from '@/utils/api-error';
 import { validateEmail } from '@/utils/validation';
 
 export default function ForgotPasswordPage() {
-  const toast = useToast();
   const [email, setEmail] = useState('');
   const [touched, setTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
 
-  const error = touched ? validateEmail(email) : null;
+  const emailError = validateEmail(email);
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setTouched(true);
-    if (validateEmail(email)) return;
-
+    if (emailError) return;
+    setError(null);
     setSubmitting(true);
     try {
       await authService.forgotPassword(email.trim());
-      setSent(true);
+      setSentTo(email.trim());
     } catch (err) {
-      toast.show(toApiError(err).message, 'error');
+      setError(toApiError(err).message);
     } finally {
       setSubmitting(false);
     }
   };
 
-  return (
-    <AuthLayout title="Recupera tu contraseña" subtitle="Te enviaremos un enlace para crear una nueva.">
-      {sent ? (
-        <div className="flex flex-col gap-4">
-          <p className="rounded-xl border border-emerald-500 p-4 text-emerald-300">
-            Si el correo está registrado, recibirás las instrucciones en unos minutos.
+  if (sentTo) {
+    return (
+      <AuthLayout title="Revisa tu correo" backTo={paths.login}>
+        <div className="flex flex-col items-center gap-4 text-center" role="status">
+          <span className="flex size-14 items-center justify-center rounded-full border border-line bg-surface">
+            <MailCheck aria-hidden className="size-7 text-accent" />
+          </span>
+          <p className="text-[15px] text-muted">
+            Si <strong className="text-white">{sentTo}</strong> tiene una cuenta, te enviamos un enlace para crear una contraseña nueva. Puede tardar unos minutos y llegar a spam.
           </p>
-          <Link to="/login" className="text-center text-sm font-bold text-brand">
+          <ButtonLink to={paths.login} className="w-full">
             Volver a iniciar sesión
-          </Link>
+          </ButtonLink>
+          <button type="button" onClick={() => setSentTo(null)} className="text-[15px] font-bold text-accent">
+            Usar otro correo
+          </button>
         </div>
-      ) : (
-        <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-          <TextField
-            label="Correo"
-            type="email"
-            autoComplete="email"
-            value={email}
-            error={error}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setTouched(true)}
-          />
-          <Button type="submit" loading={submitting}>
-            Enviar enlace
-          </Button>
-          <Link to="/login" className="text-center text-sm font-bold text-brand">
-            Volver a iniciar sesión
-          </Link>
-        </form>
-      )}
+      </AuthLayout>
+    );
+  }
+
+  return (
+    <AuthLayout title="Recupera tu contraseña" subtitle="Te enviaremos un enlace a tu correo." backTo={paths.login}>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+        <AuthInput
+          label="Correo"
+          icon={Mail}
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          onBlur={() => setTouched(true)}
+          error={touched && email ? emailError : null}
+        />
+        {error && (
+          <p role="alert" className="text-center text-[15px] text-brand">
+            {error}
+          </p>
+        )}
+        <Button type="submit" loading={submitting} disabled={emailError !== null}>
+          Enviar enlace
+        </Button>
+      </form>
     </AuthLayout>
   );
 }

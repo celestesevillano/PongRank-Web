@@ -1,80 +1,58 @@
+import { Lock, Mail, User } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+import { AuthInput } from '@/components/auth/auth-input';
+import { OnboardingProgress } from '@/components/auth/onboarding-progress';
 import { AuthLayout } from '@/components/layout/auth-layout';
 import { Button } from '@/components/ui/button';
-import { LevelPicker } from '@/components/ui/level-picker';
-import { TextField } from '@/components/ui/text-field';
-import { useSession } from '@/context/session';
-import { useToast } from '@/context/toast';
-import { authService } from '@/services/auth.service';
-import { toApiError } from '@/utils/api-error';
-import type { InitialLevel } from '@/utils/levels';
+import { useRegistration } from '@/context/registration';
+import { paths } from '@/routes/paths';
 import { validateEmail, validateName, validatePassword } from '@/utils/validation';
 
-type Field = 'name' | 'email' | 'password';
-
-const VALIDATORS: Record<Field, (value: string) => string | null> = {
-  name: validateName,
-  email: validateEmail,
-  password: validatePassword,
-};
-
 export default function RegisterPage() {
-  const { signInWithAuthResponse } = useSession();
-  const toast = useToast();
+  const { draft, saveDraft } = useRegistration();
   const navigate = useNavigate();
-  const [values, setValues] = useState<Record<Field, string>>({ name: '', email: '', password: '' });
-  const [touched, setTouched] = useState<Record<Field, boolean>>({ name: false, email: false, password: false });
-  const [level, setLevel] = useState<InitialLevel>('INTERMEDIATE');
-  const [submitting, setSubmitting] = useState(false);
+  const [name, setName] = useState(draft?.name ?? '');
+  const [email, setEmail] = useState(draft?.email ?? '');
+  const [password, setPassword] = useState(draft?.password ?? '');
+  const [touched, setTouched] = useState({ name: false, email: false, password: false });
 
-  const errorFor = (field: Field) => (touched[field] ? VALIDATORS[field](values[field]) : null);
+  const errors = { name: validateName(name), email: validateEmail(email), password: validatePassword(password) };
+  const canSubmit = !errors.name && !errors.email && !errors.password;
+  const markTouched = (field: keyof typeof touched) => setTouched((prev) => ({ ...prev, [field]: true }));
 
-  const bind = (field: Field) => ({
-    value: values[field],
-    error: errorFor(field),
-    onChange: (event: { target: { value: string } }) => setValues((current) => ({ ...current, [field]: event.target.value })),
-    onBlur: () => setTouched((current) => ({ ...current, [field]: true })),
-  });
-
-  const onSubmit = async (event: FormEvent) => {
+  const onSubmit = (event: FormEvent) => {
     event.preventDefault();
     setTouched({ name: true, email: true, password: true });
-    if ((Object.keys(VALIDATORS) as Field[]).some((field) => VALIDATORS[field](values[field]))) return;
-
-    setSubmitting(true);
-    try {
-      const auth = await authService.register({
-        name: values.name.trim(),
-        email: values.email.trim(),
-        password: values.password,
-        initialLevel: level,
-      });
-      await signInWithAuthResponse(auth);
-      toast.show('Cuenta creada. ¡Bienvenido a PongRank!', 'success');
-      navigate('/', { replace: true });
-    } catch (err) {
-      toast.show(toApiError(err).message, 'error');
-    } finally {
-      setSubmitting(false);
-    }
+    if (!canSubmit) return;
+    saveDraft({ name: name.trim(), email: email.trim(), password });
+    navigate(paths.registerAbout);
   };
 
   return (
-    <AuthLayout title="Crea tu cuenta" subtitle="Elige tu nivel inicial; luego el ranking lo ajusta con tus partidas.">
+    <AuthLayout title="Crea tu cuenta" backTo={paths.welcome} progress={<OnboardingProgress step={1} />}>
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <TextField label="Nombre" autoComplete="name" {...bind('name')} />
-        <TextField label="Correo" type="email" autoComplete="email" {...bind('email')} />
-        <TextField label="Contraseña" type="password" autoComplete="new-password" {...bind('password')} />
-        <LevelPicker value={level} onChange={setLevel} />
-        <Button type="submit" loading={submitting}>
-          Crear cuenta
+        <AuthInput label="Nombre completo" icon={User} autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} onBlur={() => markTouched('name')} error={touched.name ? errors.name : null} />
+        <AuthInput label="Correo" icon={Mail} type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} onBlur={() => markTouched('email')} error={touched.email ? errors.email : null} />
+        <AuthInput
+          label="Contraseña"
+          icon={Lock}
+          type="password"
+          autoComplete="new-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          onBlur={() => markTouched('password')}
+          error={touched.password ? errors.password : null}
+          hint="Mínimo 8 caracteres, una letra y un número."
+        />
+        <Button type="submit" disabled={!canSubmit}>
+          Continuar
         </Button>
-        <p className="text-center text-sm text-muted">
+        <p className="text-center text-[15px] text-muted">
           ¿Ya tienes cuenta?{' '}
-          <Link to="/login" className="font-bold text-brand">
-            Inicia sesión
+          <Link to={paths.login} replace className="font-bold text-accent">
+            Iniciar sesión
           </Link>
         </p>
       </form>

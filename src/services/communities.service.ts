@@ -1,10 +1,9 @@
 import { http } from '@/services/http';
 import type { CommunityMember, CommunityResponse, Page, PageParams, RankingEntry } from '@/types/api';
+import type { CommunityType } from '@/utils/community-types';
 import { normalizePage } from '@/utils/pagination';
 
-export type CommunityType = CommunityResponse['communityType'];
-
-export type CommunityCreateInput = { name: string; description?: string; communityType: CommunityType };
+export type CommunityCreateInput = { name: string; description?: string; communityType: CommunityType; customLabel?: string };
 
 export const communitiesService = {
   create: (input: CommunityCreateInput) => http.post<CommunityResponse>('/communities', input).then((r) => r.data),
