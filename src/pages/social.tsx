@@ -12,7 +12,7 @@ import { clubsService } from '@/services/clubs.service';
 import { communitiesService, type CommunityCreateInput } from '@/services/communities.service';
 import { friendOf, friendshipsService } from '@/services/friendships.service';
 import { playersService } from '@/services/players.service';
-import type { Club, ClubMembership, CommunityResponse, Friendship, PlayerSummary } from '@/types/api';
+import type { ClubMembership, CommunityResponse, Friendship, PlayerSummary } from '@/types/api';
 import { COMMUNITY_TYPE_LABELS, CREATABLE_COMMUNITY_TYPES, type CommunityType } from '@/utils/community-types';
 import { toApiError } from '@/utils/api-error';
 
@@ -62,7 +62,7 @@ export default function SocialPage() {
       </div>
 
       {segment === 'communities' && <CommunitiesSegment query={query} />}
-      {segment === 'clubs' && <ClubsSegment query={query} />}
+      {segment === 'clubs' && <ClubsSegment />}
       {segment === 'pongmigos' && <PongmigosSegment query={query} />}
     </div>
   );
@@ -161,7 +161,7 @@ function CommunitiesSegment({ query }: { query: string }) {
   );
 }
 
-function ClubsSegment({ query }: { query: string }) {
+function ClubsSegment() {
   const navigate = useNavigate();
   const { player } = useSession();
   const managed = useFetch((signal) => clubsService.managed(signal), []);
