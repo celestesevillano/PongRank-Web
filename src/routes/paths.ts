@@ -11,6 +11,7 @@ export const paths = {
   communities: '/communities',
   social: '/social',
   ranking: '/ranking',
+  statistics: '/statistics',
   matches: '/matches',
   newMatch: '/matches/new',
   findMatch: '/matches/find',

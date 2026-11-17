@@ -151,6 +151,34 @@ body,
   }
 }
 
+.nav-pill {
+  animation: nav-pop 230ms ease-out;
+}
+
+@keyframes nav-pop {
+  from {
+    transform: scale(0.78);
+    opacity: 0.6;
+  }
+}
+
+.fade-in {
+  animation: fade-in 160ms ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-pill,
+  .fade-in {
+    animation: none;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;

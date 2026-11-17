@@ -7,6 +7,7 @@ const LABELS: Record<string, string> = {
   new: 'Crear partida',
   find: 'Buscar partida',
   profile: 'Perfil',
+  statistics: 'Estadísticas',
 };
 
 export function Breadcrumbs() {

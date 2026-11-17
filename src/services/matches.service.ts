@@ -15,8 +15,9 @@ export type MatchCreateInput = {
 export const ACTIVE_STATUSES = ['CREATED', 'PROPOSED_P1', 'PROPOSED_P2', 'DISPUTED'] as const;
 
 const TOURNAMENT_PAGE_SIZE = 50;
+const HISTORY_PAGE_SIZE = 100;
 
-export const MATCH_SORTS = { newest: 'createdAt,desc', oldest: 'createdAt,asc' } as const;
+export const MATCH_SORTS = { newest: 'createdAt,desc', oldest: 'createdAt,asc', lastConfirmed: 'confirmedAt,desc' } as const;
 export type MatchSort = keyof typeof MATCH_SORTS;
 
 type PlayerMatchesParams = PageParams & { status?: MatchStatus; sort?: MatchSort };
@@ -26,6 +27,15 @@ export const matchesService = {
     http
       .get(`/matches/player/${playerId}`, { params: { ...params, sort: sort ? MATCH_SORTS[sort] : undefined }, signal })
       .then((r) => normalizePage<MatchResponse>(r.data)),
+
+  confirmedHistory: async (playerId: number, signal?: AbortSignal) => {
+    const matches = new Map<number, MatchResponse>();
+    for (let page = 0; ; page++) {
+      const result = await matchesService.byPlayer(playerId, { status: 'CONFIRMED', page, size: HISTORY_PAGE_SIZE, sort: 'lastConfirmed' }, signal);
+      for (const match of result.content) matches.set(match.id, match);
+      if (result.last || result.content.length === 0) return [...matches.values()];
+    }
+  },
 
   active: async (playerId: number, signal?: AbortSignal) => {
     const pages = await Promise.all(
