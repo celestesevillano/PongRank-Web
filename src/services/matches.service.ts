@@ -53,6 +53,12 @@ export const matchesService = {
     }
   },
 
+  tournamentMatches: (tournamentId: number, signal?: AbortSignal) =>
+    http.get(`/tournaments/${tournamentId}/matches`, { signal }).then(({ data }) => {
+      const list = Array.isArray(data) ? data : data?.content ?? [];
+      return list as { id: number; round?: number; player1?: { name: string }; player2?: { name: string } | null; scoreSummary?: string }[];
+    }),
+
   open: (location: Coordinates, signal?: AbortSignal) =>
     http.get<MatchResponse[]>('/matches/open', { params: location, signal }).then((r) => r.data),
 

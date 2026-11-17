@@ -35,6 +35,9 @@ export const clubsService = {
   update: (id: number, input: { name?: string; address?: string; description?: string }) =>
     http.patch<Club>(`/clubs/${id}`, input).then((r) => r.data),
 
+  transfer: (clubId: number, playerId: number) =>
+    http.patch(`/clubs/${clubId}/transfer`, { playerId }).then((r) => r.data),
+
   pending: (clubId: number, signal?: AbortSignal) =>
     allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/pending`, signal),
 
