@@ -1,3 +1,53 @@
+export type ClubStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'PAUSED' | 'DELETED';
+export type FederatedStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export type ClubReview = {
+  id: number;
+  name: string;
+  address: string;
+  description: string | null;
+  status: ClubStatus;
+  affiliationDocumentUrl: string | null;
+  rejectionReason: string | null;
+  admin: PlayerSummary;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ClubReviewHistory = {
+  id: number;
+  result: ClubStatus;
+  reason: string | null;
+  affiliationDocumentUrl: string | null;
+  reviewer: PlayerSummary;
+  reviewedAt: string;
+};
+
+export type FederatedReview = {
+  playerId: number;
+  category: string;
+  status: FederatedStatus;
+  submittedAt: string;
+  reviewedAt: string | null;
+  reason: string | null;
+};
+
+export type AdminFederatedReview = {
+  review: FederatedReview;
+  playerName: string;
+  reviewedBy: number | null;
+  rankingEntryId: number | null;
+};
+
+export type FederatedRankingEntry = {
+  id: number;
+  name: string;
+  club: string;
+  category: string;
+  rankingDate: string;
+  rankingPosition: number;
+};
+
 export type PlayerResponse = {
   id: number;
   name: string;
