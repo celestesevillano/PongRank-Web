@@ -1,4 +1,4 @@
-import { CircleUser, House, LogOut, MessageCircle, Swords, Trophy, Users, type LucideIcon } from 'lucide-react';
+import { CircleUser, House, LogOut, MessageCircle, Swords, Trophy, type LucideIcon } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { useSession } from '@/context/session';
@@ -10,7 +10,6 @@ type NavItem = { to: string; label: string; Icon: LucideIcon; end?: boolean; sec
 const LINKS: NavItem[] = [
   { to: paths.home, label: 'Inicio', Icon: House, end: true, section: [paths.statistics] },
   { to: paths.social, label: 'Social', Icon: MessageCircle },
-  { to: paths.communities, label: 'Comunidades', Icon: Users },
   { to: paths.matches, label: 'Partidas', Icon: Swords },
   { to: paths.ranking, label: 'Ranking', Icon: Trophy },
   { to: paths.profile, label: 'Perfil', Icon: CircleUser },
