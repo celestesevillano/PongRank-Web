@@ -22,7 +22,7 @@ export function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-line bg-black/80 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-line bg-black/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
           <img src={BrandImages.wordmark} alt="PongRank" width={116} height={14} className="h-5 w-29 object-contain object-left" />
           <nav aria-label="Principal" className="hidden gap-1 sm:flex">

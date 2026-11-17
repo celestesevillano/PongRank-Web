@@ -11,8 +11,8 @@ export function AppLayout() {
     <PlanProvider>
       <div className="min-h-screen">
         <Navbar />
-        <main className="mx-auto max-w-5xl px-4 pt-6 pb-24 sm:pb-6">
-          <Breadcrumbs />
+        <Breadcrumbs />
+        <main className="mx-auto max-w-5xl px-4 pt-4 pb-24 sm:pb-6">
           <Suspense
             fallback={
               <div className="flex justify-center py-12">
