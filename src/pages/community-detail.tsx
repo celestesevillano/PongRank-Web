@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { communitiesService } from '@/services/communities.service';
-import { toApiError } from '@/utils/api-error';
 import { COMMUNITY_TYPE_LABELS } from '@/utils/community-types';
 
 const MEDALS = ['#FFD278', '#D4D8E0', '#EAA578'];
@@ -24,7 +23,6 @@ export default function CommunityDetailPage() {
   const [panel, setPanel] = useState<'none' | 'edit' | 'members' | 'transfer'>('none');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [notice, setNotice] = useState<string | null>(null);
 
   const isMember = members.data?.content.some((m) => m.playerId === player?.id);
   const isAdmin = members.data?.content.some((m) => m.playerId === player?.id && m.role === 'COMMUNITY_ADMIN');
@@ -83,7 +81,6 @@ export default function CommunityDetailPage() {
           </>
         )}
       </ScreenState>
-      {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
   );
 }
