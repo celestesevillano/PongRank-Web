@@ -53,13 +53,11 @@ export default function WelcomePage() {
         <section className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Halo color="red" className="-top-24 -left-24 size-[28rem]" />
           <Halo color="cyan" className="right-0 -bottom-24 size-96" />
-          <div className="flex flex-col items-start gap-6">
-            <span className="rounded-full border border-line bg-surface px-3 py-1 text-xs font-bold tracking-wide text-muted uppercase">Tenis de mesa competitivo</span>
-            <h1 className="text-4xl leading-tight font-black italic sm:text-6xl">El ranking de tenis de mesa de tu comunidad</h1>
-            <p className="max-w-xl text-lg text-muted">PongRank une partidas, ranking y Pongmigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
-            <div className="flex flex-wrap items-center gap-3">
-              <ButtonLink to={paths.register}>Empezar gratis</ButtonLink>
-            </div>
+          <div className="flex max-w-xl flex-col items-start gap-5">
+            <span className="rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-sm font-extrabold tracking-wider text-accent uppercase">Tenis de mesa competitivo</span>
+            <h1 className="text-4xl leading-[1.1] font-black italic sm:text-5xl lg:text-6xl">El ranking de tenis de mesa de tu comunidad</h1>
+            <p className="text-lg text-muted">PongRank une partidas, ranking y Pongmigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
+            <ButtonLink to={paths.register} className="mt-1 w-full sm:w-auto sm:min-w-56">Empezar gratis</ButtonLink>
           </div>
           <div className="flex justify-center">
             <img src="/illustrations/landing/landing-hero.webp" alt="Pongi y Ranky jugando una partida de tenis de mesa" className="w-full max-w-xl drop-shadow-[0_0_60px_rgba(232,38,47,0.3)]" />
@@ -70,7 +68,7 @@ export default function WelcomePage() {
         <section className="grid gap-4 md:grid-cols-3">
           {FEATURES.map(({ Icon, title, text }) => (
             <article key={title} className="rounded-2xl border border-line bg-surface p-6">
-              <span className="mb-4 flex size-11 items-center justify-center rounded-xl bg-brand/15 text-brand"><Icon className="size-5" /></span>
+              <Icon className="mb-4 size-8 text-accent" strokeWidth={1.75} aria-hidden />
               <h2 className="text-lg font-extrabold">{title}</h2>
               <p className="mt-1 text-muted">{text}</p>
             </article>
