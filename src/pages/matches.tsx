@@ -43,6 +43,12 @@ const SORT_OPTIONS: { value: MatchSort; label: string }[] = [
   { value: 'oldest', label: 'Más antiguas' },
 ];
 
+const HISTORY_ART: Record<HistoryFilter, string> = {
+  CONFIRMED: MatchArt.confirmed,
+  CANCELLED: MatchArt.cancelled,
+  WALKOVER: MatchArt.loss,
+};
+
 const HISTORY_EMPTY: Record<HistoryFilter, string> = {
   CONFIRMED: 'Aún no tienes partidas jugadas. Las que esperan confirmación están en Activas.',
   CANCELLED: 'No tienes partidas canceladas.',
@@ -126,7 +132,7 @@ function MatchHistory({ playerId }: { playerId: number }) {
             <PaginationBar page={history.data} size={history.size} onPageChange={history.setPage} onSizeChange={history.setSize} />
           </>
         ) : (
-          <MatchState title="Sin partidas" message={HISTORY_EMPTY[filter]} art={MatchArt.idle} />
+          <MatchState title="Sin partidas" message={HISTORY_EMPTY[filter]} art={HISTORY_ART[filter]} />
         )}
       </LoadState>
     </div>
