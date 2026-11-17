@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 import { PrivateRoute, PublicOnlyRoute } from '@/components/common/private-route';
 import { AppLayout } from '@/components/layout/app-layout';
@@ -53,8 +53,8 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/social', element: withSuspense(<SocialPage />) },
+          { path: '/communities', element: <Navigate to="/social" replace /> },
           { path: '/ranking', element: <RankingPage /> },
-          { path: '/communities', element: <CommunitiesPage /> },
           { path: '/matches', element: <MatchesPage /> },
           { path: '/matches/new', element: <NewMatchPage /> },
           { path: '/matches/find', element: <FindMatchPage /> },
