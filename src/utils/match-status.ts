@@ -12,7 +12,7 @@ export const STATUS_INFO: Record<MatchStatus, { label: string; tone: StatusTone 
   WALKOVER: { label: 'Walkover', tone: 'neutral' },
 };
 
-export const FORMAT_LABELS = { BO3: 'Al mejor de 3', BO5: 'Al mejor de 5', BO7: 'Al mejor de 7' } as const;
+export const FORMAT_LABELS = { BO3: 'Mejor de 3', BO5: 'Mejor de 5', BO7: 'Mejor de 7' } as const;
 
 export function matchPerspective(match: MatchResponse, playerId: number) {
   const isPlayer1 = match.player1.id === playerId;
@@ -34,3 +34,9 @@ export function matchPerspective(match: MatchResponse, playerId: number) {
     iWon: match.winnerId === null ? null : match.winnerId === playerId,
   };
 }
+
+export function matchPlace(match: MatchResponse) {
+  return match.communityName ?? (match.latitude !== null && match.longitude !== null ? 'Lugar de encuentro' : null);
+}
+
+export const matchTime = (when: string | Date) => new Date(when).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
