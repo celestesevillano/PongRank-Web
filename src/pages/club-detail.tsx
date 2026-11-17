@@ -17,8 +17,14 @@ export default function ClubDetailPage() {
   const club = useFetch((signal) => clubsService.detail(clubId, signal), [clubId]);
   const members = useFetch((signal) => clubsService.members(clubId, signal), [clubId]);
   const announcements = useFetch((signal) => clubsService.announcements(clubId, signal), [clubId]);
+  const pending = useFetch((signal) => clubsService.pending(clubId, signal), [clubId]);
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
 
   const request = async () => {
     setBusy(true);
@@ -33,6 +39,7 @@ export default function ClubDetailPage() {
   };
 
   const isMember = members.data?.some((m) => m.player?.id === player?.id);
+  const isAdmin = members.data?.some((m) => m.player?.id === player?.id && m.role === 'CLUB_ADMIN') || club.data?.admin?.id === player?.id;
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -46,7 +53,36 @@ export default function ClubDetailPage() {
               {data.description && <p className="mt-1 text-sm text-muted">{data.description}</p>}
               <p className="mt-1 text-xs font-bold text-gold">{data.status === 'PENDING' ? 'En revisión' : data.status === 'APPROVED' ? 'Aprobado' : data.status}</p>
             </div>
+            {isAdmin && <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>}
+            {editing && (
+              <Card className="flex flex-col gap-2">
+                <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />
+                <input value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />
+                <div className="flex gap-2">
+                  <Button onClick={async () => { await clubsService.update(clubId, { name, address }); setEditing(false); club.refetch(); }}>Guardar</Button>
+                  <Button variant="secondary" onClick={() => setEditing(false)}>Cancelar</Button>
+                </div>
+              </Card>
+            )}
             {!isMember && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Unirme</Button>}
+            {isAdmin && (
+              <section className="flex flex-col gap-2">
+                <h2 className="font-bold">Solicitudes</h2>
+                {(pending.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin solicitudes.</p> : (pending.data ?? []).map((item) => (
+                  <Card key={item.id} className="flex items-center justify-between gap-2">
+                    <span className="font-bold">{item.player?.name ?? 'Jugador'}</span>
+                    <div className="flex gap-2">
+                      <Button onClick={async () => { await clubsService.reviewMembership(item.id, 'approve'); pending.refetch(); members.refetch(); }}>Aprobar</Button>
+                      <Button variant="secondary" onClick={async () => { await clubsService.reviewMembership(item.id, 'reject'); pending.refetch(); }}>Rechazar</Button>
+                    </div>
+                  </Card>
+                ))}
+                <h2 className="font-bold">Nuevo anuncio</h2>
+                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" className="min-h-11 rounded-xl border border-line bg-black px-3" />
+                <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje" rows={2} className="rounded-xl border border-line bg-black px-3 py-2" />
+                <Button onClick={async () => { if (!title.trim() || !body.trim()) return; await clubsService.createAnnouncement(clubId, { title, body }); setTitle(''); setBody(''); announcements.refetch(); }}>Publicar</Button>
+              </section>
+            )}
             <section className="flex flex-col gap-2">
               <h2 className="flex items-center gap-2 font-bold"><Megaphone className="size-4" /> Anuncios</h2>
               {(announcements.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : (announcements.data ?? []).map((item) => (

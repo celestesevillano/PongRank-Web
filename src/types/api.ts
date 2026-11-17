@@ -156,6 +156,7 @@ export type Club = {
   description?: string | null;
   status?: 'APPROVED' | 'PENDING' | 'REJECTED' | 'PAUSED' | 'DELETED';
   memberCount?: number | null;
+  admin?: PlayerSummary;
 };
 
 export type ClubMembership = {
