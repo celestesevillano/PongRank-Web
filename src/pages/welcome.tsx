@@ -17,7 +17,7 @@ export default function WelcomePage() {
       <header className="sticky top-0 z-20 border-b border-line bg-black/90 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
           <img src={BrandImages.wordmark} alt="PongRank" className="h-6" />
-          <div className="flex items-center gap-+2">
+          <div className="flex items-center gap-2">
             <Link to={paths.login} className="px-3 py-2 text-sm font-bold text-muted hover:text-white">Iniciar sesión</Link>
             <ButtonLink to={paths.register}>Crear cuenta</ButtonLink>
           </div>
