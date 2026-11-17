@@ -166,26 +166,8 @@ function ClubsSegment({ query }: { query: string }) {
   const { player } = useSession();
   const managed = useFetch((signal) => clubsService.managed(signal), []);
   const memberships = useFetch((signal) => player ? clubsService.memberships(player.id, signal) : Promise.resolve([] as ClubMembership[]), [player?.id]);
-  const search = useFetch((signal) => clubsService.search({ page: 0, size: 20, name: query.trim() || undefined }, signal), [query]);
-  const [pending, setPending] = useState<number | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [showRequests, setShowRequests] = useState(false);
-
-  const memberClubIds = new Set((memberships.data ?? []).filter((m) => m.status === 'APPROVED' || m.status === 'PENDING').map((m) => m.clubId));
   const pendingRequests = (memberships.data ?? []).filter((m) => m.status === 'PENDING');
-
-  const request = async (club: Club) => {
-    setPending(club.id);
-    try {
-      await clubsService.requestMembership(club.id);
-      setNotice('Solicitud enviada. El club la revisará.');
-      memberships.refetch();
-    } catch (err) {
-      setNotice(toApiError(err).message);
-    } finally {
-      setPending(null);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -222,7 +204,6 @@ function ClubsSegment({ query }: { query: string }) {
         )}
       </ScreenState>
       <Button icon={Plus} variant="secondary" onClick={() => navigate('/social/register-club')}>Registrar club</Button>
-      {notice && <InfoPopup message={notice} onClose={() => setNotice(null)} />}
     </div>
   );
 }
