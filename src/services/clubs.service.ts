@@ -32,5 +32,8 @@ export const clubsService = {
 
   requestMembership: (clubId: number) => http.post('/club-memberships', { clubId }).then((r) => r.data),
 
+  register: (input: { name: string; address: string; description?: string; affiliationDocumentUrl: string }) =>
+    http.post('/clubs', input).then((r) => r.data),
+
   leave: (id: number) => http.patch(`/club-memberships/${id}/leave`).then((r) => r.data),
 };

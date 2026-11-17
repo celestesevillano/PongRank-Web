@@ -29,4 +29,7 @@ export const communitiesService = {
     http.delete<void>(`/communities/${communityId}/members/${playerId}`).then((r) => r.data),
 
   join: (communityId: number) => http.post<unknown>(`/communities/${communityId}/members`, {}).then((r) => r.data),
+
+  transfer: (communityId: number, playerId: number) =>
+    http.patch(`/communities/${communityId}/transfer`, { playerId }).then((r) => r.data),
 };
