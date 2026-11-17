@@ -164,7 +164,6 @@ export default function WelcomePage() {
         {/* Cierre */}
         <section className="relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-3xl border border-line bg-surface px-6 py-14 text-center">
           <Halo color="red" className="top-0 left-1/2 size-80 -translate-x-1/2 -translate-y-1/3" />
-          <img src="/illustrations/landing/landing-cierre.webp" alt="" className="w-full max-w-2xl" loading="lazy" />
           <h2 className="text-3xl font-black">¿Listo para subir en el ranking?</h2>
           <ButtonLink to={paths.register}>Empezar gratis</ButtonLink>
         </section>
