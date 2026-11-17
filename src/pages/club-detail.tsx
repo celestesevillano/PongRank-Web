@@ -85,13 +85,13 @@ export default function ClubDetailPage() {
             )}
             <section className="flex flex-col gap-2">
               <h2 className="flex items-center gap-2 font-bold"><Megaphone className="size-4" /> Anuncios</h2>
-              {(announcements.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : (announcements.data ?? []).map((item) => (
+              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : (announcements.data ?? []).map((item) => (
                 <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>
               ))}
             </section>
             <section className="flex flex-col gap-2">
               <h2 className="flex items-center gap-2 font-bold"><Users className="size-4" /> Personas</h2>
-              {(members.data ?? []).map((member) => (
+              {(Array.isArray(members.data) ? members.data : []).map((member) => (
                 <Card key={member.id} className="flex items-center justify-between">
                   <span className="font-bold">{member.player?.name ?? member.clubName}</span>
                   <span className="text-xs text-muted">{member.role === 'CLUB_ADMIN' ? 'Admin' : 'Miembro'}</span>
