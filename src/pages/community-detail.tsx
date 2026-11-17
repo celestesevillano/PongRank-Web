@@ -1,8 +1,7 @@
-import { ChevronLeft, Pencil, Users } from 'lucide-react';
+import { ChevronLeft, Pencil, Share2, Shield, Trophy, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
-import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { ScreenState } from '@/components/common/screen-state';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,6 +11,8 @@ import { communitiesService } from '@/services/communities.service';
 import { toApiError } from '@/utils/api-error';
 import { COMMUNITY_TYPE_LABELS } from '@/utils/community-types';
 
+const MEDALS = ['#FFD278', '#D4D8E0', '#EAA578'];
+
 export default function CommunityDetailPage() {
   const { id } = useParams();
   const communityId = Number(id);
@@ -19,94 +20,71 @@ export default function CommunityDetailPage() {
   const { player } = useSession();
   const detail = useFetch((signal) => communitiesService.detail(communityId, signal), [communityId]);
   const members = useFetch((signal) => communitiesService.members(communityId, { page: 0, size: 50 }, signal), [communityId]);
-  const ranking = useFetch((signal) => communitiesService.ranking(communityId, { page: 0, size: 5 }, signal), [communityId]);
-  const [leaving, setLeaving] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [transferring, setTransferring] = useState(false);
+  const ranking = useFetch((signal) => communitiesService.ranking(communityId, { page: 0, size: 3 }, signal), [communityId]);
+  const [panel, setPanel] = useState<'none' | 'edit' | 'members' | 'transfer'>('none');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
 
   const isMember = members.data?.content.some((m) => m.playerId === player?.id);
   const isAdmin = members.data?.content.some((m) => m.playerId === player?.id && m.role === 'COMMUNITY_ADMIN');
-
-  const leave = async () => {
-    if (!player) return;
-    try {
-      await communitiesService.leave(communityId, player.id);
-      navigate('/social');
-    } catch (err) {
-      setNotice(toApiError(err).message);
-    } finally {
-      setLeaving(false);
-    }
-  };
+  const top = ranking.data?.content.slice(0, 3) ?? [];
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-      <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
+      <div className="flex items-center justify-between">
+        <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
+        <div className="flex gap-1">
+          {isAdmin && <button type="button" aria-label="Editar" onClick={() => { setName(detail.data?.name ?? ''); setDescription(detail.data?.description ?? ''); setPanel('edit'); }} className="rounded-full p-2 hover:bg-white/10"><Pencil className="size-5" /></button>}
+          {isAdmin && <button type="button" aria-label="Transferir" onClick={() => setPanel('transfer')} className="rounded-full p-2 hover:bg-white/10"><Share2 className="size-5" /></button>}
+        </div>
+      </div>
+
       <ScreenState {...detail} onRetry={detail.refetch} isEmpty={() => false}>
-        {(community) => (
+        {(data) => (
           <>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-extrabold">{community.name}</h1>
-                <p className="text-sm text-muted">{COMMUNITY_TYPE_LABELS[community.communityType]} · {community.memberCount} miembros</p>
-                {community.description && <p className="mt-1 text-sm text-muted">{community.description}</p>}
+            <Card className="overflow-hidden p-0">
+              <div className="relative">
+                <img src="/illustrations/pongrank-comunidad-portada.webp" alt="" className="h-36 w-full object-cover" />
+                <span className="absolute bottom-3 left-3 flex size-10 items-center justify-center rounded-lg bg-[#12323A] text-sm font-black">{data.name.slice(0, 2).toUpperCase()}</span>
               </div>
-              {isAdmin && (
-                <div className="flex gap-2">
-                  <Button variant="secondary" icon={Pencil} onClick={() => { setName(community.name); setDescription(community.description ?? ''); setEditing(true); }}>Editar</Button>
-                  <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
+              <div className="flex flex-col gap-1 p-4">
+                <h1 className="text-2xl font-extrabold">{data.name}</h1>
+                <p className="text-sm text-muted">{data.memberCount} {data.memberCount === 1 ? 'miembro' : 'miembros'} · {COMMUNITY_TYPE_LABELS[data.type] ?? data.type}</p>
+                {data.creatorName && <p className="text-sm text-muted">Creada por {data.creatorName}</p>}
+                {isAdmin ? <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full border border-[#24616A] px-2 py-0.5 text-xs font-bold text-accent"><Shield className="size-3.5" /> Administrador</span>
+                  : isMember && <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full border border-[#1F6B3A] px-2 py-0.5 text-xs font-bold text-[#4ADE80]"><Users className="size-3.5" /> Eres miembro</span>}
+              </div>
+            </Card>
+
+            <section>
+              <h2 className="text-lg font-extrabold">Sobre la comunidad</h2>
+              <p className="mt-1 text-muted">{data.description || 'Sin descripción.'}</p>
+            </section>
+
+            <Card className="border-[#8E703B]">
+              <h2 className="mb-3 flex items-center gap-2 font-extrabold"><Trophy className="size-5 text-gold" /> Top 3 de la comunidad</h2>
+              {top.length === 0 ? <p className="text-sm text-muted">Aún no hay ranking.</p> : top.map((entry, index) => (
+                <div key={entry.playerId} className="flex items-center gap-3 py-2">
+                  <span className="flex size-7 items-center justify-center rounded-full text-sm font-black" style={{ background: `${MEDALS[index]}22`, color: MEDALS[index] }}>{index + 1}</span>
+                  <span className="flex-1 font-bold">{entry.name}</span>
+                  <span className="font-extrabold" style={{ color: MEDALS[index] }}>{Math.round(entry.ratingGlicko)}</span>
                 </div>
-              )}
+              ))}
+            </Card>
+
+            <div className="flex gap-2">
+              {isAdmin && <Button variant="secondary" className="flex-1" onClick={() => setPanel(panel === 'members' ? 'none' : 'members')}>Ver miembros</Button>}
+              <Button icon={Trophy} className="flex-1" onClick={() => navigate('/ranking')}>Ver ranking</Button>
             </div>
-            {transferring && (
-              <Card className="flex flex-col gap-2">
-                <p className="font-bold">Elige el nuevo admin</p>
-                {(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((member) => (
-                  <Button key={member.playerId} variant="secondary" onClick={async () => {
-                    try {
-                      await communitiesService.transfer(communityId, member.playerId);
-                      setNotice(`Admin transferido a ${member.playerName}.`);
-                      setTransferring(false);
-                      members.refetch();
-                    } catch (err) {
-                      setNotice(toApiError(err).message);
-                    }
-                  }}>{member.playerName}</Button>
-                ))}
-                <Button variant="secondary" onClick={() => setTransferring(false)}>Cancelar</Button>
-              </Card>
-            )}
-            {editing && (
-              <Card className="flex flex-col gap-2">
-                <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3 outline-none focus:border-accent" />
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2" />
-                <div className="flex gap-2"><Button onClick={async () => { await communitiesService.update(communityId, { name, description }); setEditing(false); detail.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setEditing(false)}>Cancelar</Button></div>
-              </Card>
-            )}
-            <section className="flex flex-col gap-2">
-              <h2 className="font-bold">Top</h2>
-              {(ranking.data?.content ?? []).map((entry) => (
-                <Card key={entry.playerId} className="flex justify-between"><span>#{entry.position} {entry.playerName}</span><span className="font-bold">{Math.round(entry.ratingGlicko)}</span></Card>
-              ))}
-            </section>
-            <section className="flex flex-col gap-2">
-              <h2 className="flex items-center gap-2 font-bold"><Users className="size-4" /> Miembros</h2>
-              {(members.data?.content ?? []).map((member) => (
-                <Card key={member.playerId} className="flex items-center justify-between">
-                  <Link to={`/social/player/${member.playerId}`} className="font-bold hover:underline">{member.playerName}</Link>
-                  <span className="text-xs text-muted">{member.role === 'COMMUNITY_ADMIN' ? 'Admin' : 'Miembro'}</span>
-                </Card>
-              ))}
-            </section>
-            {isMember && <Button variant="secondary" onClick={() => setLeaving(true)}>Salir</Button>}
+
+            {panel === 'members' && <section className="flex flex-col gap-2">{(members.data?.content ?? []).map((m) => <Card key={m.playerId} className="flex justify-between"><span className="font-bold">{m.name}</span><span className="text-xs text-muted">{m.role === 'COMMUNITY_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</section>}
+            {panel === 'edit' && <section className="flex flex-col gap-2"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><div className="flex gap-2"><Button onClick={async () => { await communitiesService.update(communityId, { name, description }); setPanel('none'); detail.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></section>}
+            {panel === 'transfer' && <section className="flex flex-col gap-2"><h2 className="font-bold">Transferir administración</h2>{(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((m) => <Button key={m.playerId} variant="secondary" onClick={async () => { await communitiesService.transfer(communityId, m.playerId); setPanel('none'); members.refetch(); }}>{m.name}</Button>)}</section>}
           </>
         )}
       </ScreenState>
-      <ConfirmDialog open={leaving} title="¿Salir de la comunidad?" message="Dejarás de aparecer en su ranking." confirmLabel="Salir" onCancel={() => setLeaving(false)} onConfirm={leave} />
-      {notice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><div className="rounded-2xl bg-surface p-6 text-center"><p className="text-sm text-muted">{notice}</p><Button className="mt-3" onClick={() => setNotice(null)}>Aceptar</Button></div></div>}
+      {notice && <p className="text-sm text-muted">{notice}</p>}
     </div>
   );
 }
