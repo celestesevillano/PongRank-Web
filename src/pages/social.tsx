@@ -221,22 +221,6 @@ function ClubsSegment({ query }: { query: string }) {
           </div>
         )}
       </ScreenState>
-      <h3 className="text-lg font-bold">Clubes aprobados</h3>
-      <ScreenState {...search} onRetry={search.refetch} isEmpty={(data) => data.content.length === 0} emptyMessage={query ? 'No encontramos clubes con ese nombre.' : 'Todavía no hay clubes aprobados.'}>
-        {(page) => (
-          <div className="flex flex-col gap-3">
-            {page.content.map((club) => (
-              <Card key={club.id} className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate font-bold">{club.name}</p>
-                  <p className="truncate text-xs text-muted">{club.address}</p>
-                </div>
-                {memberClubIds.has(club.id) ? <span className="text-sm font-bold text-accent">Miembro</span> : <Button loading={pending === club.id} onClick={() => request(club)}>Unirme</Button>}
-              </Card>
-            ))}
-          </div>
-        )}
-      </ScreenState>
       <Button icon={Plus} variant="secondary" onClick={() => navigate('/social/register-club')}>Registrar club</Button>
       {notice && <InfoPopup message={notice} onClose={() => setNotice(null)} />}
     </div>
