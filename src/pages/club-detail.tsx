@@ -21,6 +21,7 @@ export default function ClubDetailPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [transferring, setTransferring] = useState(false);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [title, setTitle] = useState('');
@@ -53,7 +54,23 @@ export default function ClubDetailPage() {
               {data.description && <p className="mt-1 text-sm text-muted">{data.description}</p>}
               <p className="mt-1 text-xs font-bold text-gold">{data.status === 'PENDING' ? 'En revisión' : data.status === 'APPROVED' ? 'Aprobado' : data.status}</p>
             </div>
-            {isAdmin && <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>}
+            {isAdmin && (
+              <div className="flex gap-2">
+                <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>
+                <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
+              </div>
+            )}
+            {transferring && (
+              <Card className="flex flex-col gap-2">
+                <p className="font-bold">Elige el nuevo admin</p>
+                {(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((member) => (
+                  <Button key={member.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, member.player!.id); setTransferring(false); members.refetch(); }}>
+                    {member.player?.name}
+                  </Button>
+                ))}
+                <Button variant="secondary" onClick={() => setTransferring(false)}>Cancelar</Button>
+              </Card>
+            )}
             {editing && (
               <Card className="flex flex-col gap-2">
                 <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />

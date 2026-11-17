@@ -19,6 +19,9 @@ export const authService = {
 
   forgotPassword: (email: string) => http.post<void>('/auth/forgot-password', { email }).then((r) => r.data),
 
+  changePassword: (input: { currentPassword: string; newPassword: string }) =>
+    http.patch('/auth/password', input).then((r) => r.data),
+
   resetPassword: (token: string, newPassword: string) =>
     http.post<void>('/auth/reset-password', { token, newPassword }).then((r) => r.data),
 

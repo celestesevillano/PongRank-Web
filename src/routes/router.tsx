@@ -24,6 +24,9 @@ const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
 const TournamentsPage = lazy(() => import('@/pages/tournaments'));
+const BracketPage = lazy(() => import('@/pages/bracket'));
+const AccountPage = lazy(() => import('@/pages/account'));
+const PrivacyPage = lazy(() => import('@/pages/privacy'));
 const NewMatchPage = lazy(() => import('@/pages/new-match'));
 const FindMatchPage = lazy(() => import('@/pages/find-match'));
 const MatchDetailPage = lazy(() => import('@/pages/match-detail'));
@@ -70,6 +73,9 @@ export const router = createBrowserRouter([
           { path: '/ranking', element: <RankingPage /> },
           { path: '/matches', element: <MatchesPage /> },
           { path: '/matches/tournaments', element: withSuspense(<TournamentsPage />) },
+          { path: '/matches/tournaments/:id', element: withSuspense(<BracketPage />) },
+          { path: '/profile/account', element: withSuspense(<AccountPage />) },
+          { path: '/profile/privacy', element: withSuspense(<PrivacyPage />) },
           { path: '/matches/new', element: <NewMatchPage /> },
           { path: '/matches/find', element: <FindMatchPage /> },
           { path: '/matches/:id', element: <MatchDetailPage /> },
