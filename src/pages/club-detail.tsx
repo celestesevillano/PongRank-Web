@@ -1,4 +1,5 @@
-import { ChevronLeft, Megaphone, Users } from 'lucide-react';
+import { BarChart3, ChevronLeft, ChevronRight, GitFork, MapPin, Megaphone, Pencil, Shield, UserPlus, Users } from 'lucide-react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
@@ -8,7 +9,6 @@ import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { clubsService } from '@/services/clubs.service';
 import { toApiError } from '@/utils/api-error';
-import { useState } from 'react';
 
 export default function ClubDetailPage() {
   const { id } = useParams();
@@ -18,112 +18,90 @@ export default function ClubDetailPage() {
   const members = useFetch((signal) => clubsService.members(clubId, signal), [clubId]);
   const announcements = useFetch((signal) => clubsService.announcements(clubId, signal), [clubId]);
   const pending = useFetch((signal) => clubsService.pending(clubId, signal), [clubId]);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [transferring, setTransferring] = useState(false);
+  const [panel, setPanel] = useState<'none' | 'requests' | 'ranking' | 'notices' | 'members' | 'edit' | 'transfer' | 'notice'>('none');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-
-  const request = async () => {
-    setBusy(true);
-    try {
-      await clubsService.requestMembership(clubId);
-      setNotice('Solicitud enviada.');
-    } catch (err) {
-      setNotice(toApiError(err).message);
-    } finally {
-      setBusy(false);
-    }
-  };
+  const [notice, setNotice] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
   const isMember = members.data?.some((m) => m.player?.id === player?.id);
   const isAdmin = members.data?.some((m) => m.player?.id === player?.id && m.role === 'CLUB_ADMIN') || club.data?.admin?.id === player?.id;
+  const memberCount = members.data?.length ?? 0;
+
+  const request = async () => {
+    setBusy(true);
+    try { await clubsService.requestMembership(clubId); setNotice('Solicitud enviada.'); }
+    catch (err) { setNotice(toApiError(err).message); }
+    finally { setBusy(false); }
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-      <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
+      <div className="flex items-center justify-between">
+        <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
+        {isAdmin && <button type="button" aria-label="Editar club" onClick={() => { setName(club.data?.name ?? ''); setAddress(club.data?.address ?? ''); setPanel('edit'); }} className="rounded-full p-2 text-white hover:bg-white/10"><Pencil className="size-5" /></button>}
+      </div>
       <ScreenState {...club} onRetry={club.refetch} isEmpty={() => false}>
         {(data) => (
           <>
-            <div>
-              <h1 className="text-2xl font-extrabold">{data.name}</h1>
-              <p className="text-sm text-muted">{data.address}</p>
-              {data.description && <p className="mt-1 text-sm text-muted">{data.description}</p>}
-              <p className="mt-1 text-xs font-bold text-gold">{data.status === 'PENDING' ? 'En revisión' : data.status === 'APPROVED' ? 'Aprobado' : data.status}</p>
-            </div>
-            {isAdmin && (
-              <div className="flex gap-2">
-                <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>
-                <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
+            <Card className="overflow-hidden p-0">
+              <img src="/illustrations/club-portada.webp" alt="" className="h-36 w-full object-cover" />
+              <div className="flex flex-col gap-1 p-4">
+                <h1 className="text-2xl font-extrabold">{data.name}</h1>
+                <p className="text-sm text-muted">{memberCount} {memberCount === 1 ? 'miembro' : 'miembros'} · Club</p>
+                <p className="flex items-center gap-1 text-sm text-muted"><MapPin className="size-4" /> {data.address}</p>
+                {data.admin?.name && <p className="text-sm text-muted">Creado por {data.admin.name}</p>}
+                {isAdmin && <span className="mt-1 inline-flex w-fit items-center gap-1 rounded-full border border-[#24616A] px-2 py-0.5 text-xs font-bold text-accent"><Shield className="size-3.5" /> Administrador</span>}
               </div>
-            )}
-            {transferring && (
-              <Card className="flex flex-col gap-2">
-                <p className="font-bold">Elige el nuevo admin</p>
-                {(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((member) => (
-                  <Button key={member.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, member.player!.id); setTransferring(false); members.refetch(); }}>
-                    {member.player?.name}
-                  </Button>
-                ))}
-                <Button variant="secondary" onClick={() => setTransferring(false)}>Cancelar</Button>
-              </Card>
-            )}
-            {editing && (
-              <Card className="flex flex-col gap-2">
-                <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />
-                <input value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />
-                <div className="flex gap-2">
-                  <Button onClick={async () => { await clubsService.update(clubId, { name, address }); setEditing(false); club.refetch(); }}>Guardar</Button>
-                  <Button variant="secondary" onClick={() => setEditing(false)}>Cancelar</Button>
-                </div>
-              </Card>
-            )}
-            {!isMember && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Unirme</Button>}
-            {isAdmin && (
-              <section className="flex flex-col gap-2">
-                <h2 className="font-bold">Solicitudes</h2>
-                {(pending.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin solicitudes.</p> : (pending.data ?? []).map((item) => (
-                  <Card key={item.id} className="flex items-center justify-between gap-2">
-                    <span className="font-bold">{item.player?.name ?? 'Jugador'}</span>
-                    <div className="flex gap-2">
-                      <Button onClick={async () => { await clubsService.reviewMembership(item.id, 'approve'); pending.refetch(); members.refetch(); }}>Aprobar</Button>
-                      <Button variant="secondary" onClick={async () => { await clubsService.reviewMembership(item.id, 'reject'); pending.refetch(); }}>Rechazar</Button>
-                    </div>
-                  </Card>
-                ))}
-                <h2 className="font-bold">Nuevo anuncio</h2>
-                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" className="min-h-11 rounded-xl border border-line bg-black px-3" />
-                <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje" rows={2} className="rounded-xl border border-line bg-black px-3 py-2" />
-                <Button onClick={async () => { if (!title.trim() || !body.trim()) return; await clubsService.createAnnouncement(clubId, { title, body }); setTitle(''); setBody(''); announcements.refetch(); }}>Publicar</Button>
-              </section>
-            )}
-            <section className="flex flex-col gap-2">
-              <h2 className="flex items-center gap-2 font-bold"><Megaphone className="size-4" /> Anuncios</h2>
-              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? (
-                <div className="flex flex-col items-center gap-2 py-4">
-                  <img src="/illustrations/club-vacio-avisos.webp" alt="" className="w-32" />
-                  <p className="text-sm text-muted">Sin anuncios.</p>
-                </div>
-              ) : (announcements.data ?? []).map((item) => (
-                <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>
-              ))}
-            </section>
-            <section className="flex flex-col gap-2">
-              <h2 className="flex items-center gap-2 font-bold"><Users className="size-4" /> Personas</h2>
-              {(Array.isArray(members.data) ? members.data : []).map((member) => (
-                <Card key={member.id} className="flex items-center justify-between">
-                  <span className="font-bold">{member.player?.name ?? member.clubName}</span>
-                  <span className="text-xs text-muted">{member.role === 'CLUB_ADMIN' ? 'Admin' : 'Miembro'}</span>
-                </Card>
-              ))}
-            </section>
+            </Card>
+
+            {isAdmin && <Button variant="secondary" icon={Megaphone} onClick={() => setPanel('notice')}>Nuevo aviso</Button>}
+
+            <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+              {isAdmin && <Row Icon={UserPlus} label="Solicitudes recibidas" count={pending.data?.length} onClick={() => setPanel(panel === 'requests' ? 'none' : 'requests')} />}
+              <Row Icon={BarChart3} label="Ver ranking" subtitle="Posiciones y rating" onClick={() => setPanel(panel === 'ranking' ? 'none' : 'ranking')} />
+              <Row Icon={Megaphone} label="Avisos" subtitle="Anuncios del club" onClick={() => setPanel(panel === 'notices' ? 'none' : 'notices')} />
+              {isAdmin && <Row Icon={GitFork} label="Revisar llave" onClick={() => setPanel('none')} to={`/matches/tournaments`} />}
+              <Row Icon={Users} label={isAdmin ? 'Gestionar miembros' : 'Ver miembros'} subtitle={`${memberCount} miembros`} onClick={() => setPanel(panel === 'members' ? 'none' : 'members')} last />
+            </div>
+
+            {isAdmin && <button type="button" onClick={() => setPanel('transfer')} className="text-center font-bold text-accent">Transferir administración</button>}
+
+            {panel === 'requests' && <Panel title="Solicitudes">{(pending.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin solicitudes.</p> : pending.data?.map((item) => (
+              <div key={item.id} className="flex items-center justify-between gap-2"><span className="font-bold">{item.player?.name}</span><div className="flex gap-2"><Button onClick={async () => { await clubsService.reviewMembership(item.id, 'approve'); pending.refetch(); members.refetch(); }}>Aprobar</Button><Button variant="secondary" onClick={async () => { await clubsService.reviewMembership(item.id, 'reject'); pending.refetch(); }}>Rechazar</Button></div></div>
+            ))}</Panel>}
+
+            {panel === 'notices' && <Panel title="Avisos">{(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? <Empty art="/illustrations/club-vacio-avisos.webp" text="Sin anuncios." /> : announcements.data?.map((item) => <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>)}</Panel>}
+
+            {panel === 'members' && <Panel title="Miembros">{(members.data ?? []).map((m) => <Card key={m.id} className="flex justify-between"><span className="font-bold">{m.player?.name}</span><span className="text-xs text-muted">{m.role === 'CLUB_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</Panel>}
+
+            {panel === 'notice' && <Panel title="Nuevo aviso"><input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje" rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><Button onClick={async () => { if (!title.trim() || !body.trim()) return; await clubsService.createAnnouncement(clubId, { title, body }); setTitle(''); setBody(''); setPanel('notices'); announcements.refetch(); }}>Publicar</Button></Panel>}
+
+            {panel === 'edit' && <Panel title="Editar club"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><input value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><div className="flex gap-2"><Button onClick={async () => { await clubsService.update(clubId, { name, address }); setPanel('none'); club.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></Panel>}
+
+            {panel === 'transfer' && <Panel title="Transferir administración">{(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((m) => <Button key={m.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, m.player!.id); setPanel('none'); members.refetch(); }}>{m.player?.name}</Button>)}<Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></Panel>}
+
+            {!isMember && !isAdmin && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Solicitar ingreso</Button>}
           </>
         )}
       </ScreenState>
       {notice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><div className="rounded-2xl bg-surface p-6 text-center"><p className="text-sm text-muted">{notice}</p><Button className="mt-3" onClick={() => setNotice(null)}>Aceptar</Button></div></div>}
     </div>
   );
+}
+
+function Row({ Icon, label, subtitle, count, onClick, to, last }: { Icon: typeof Users; label: string; subtitle?: string; count?: number; onClick: () => void; to?: string; last?: boolean }) {
+  const className = `flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-white/5 ${last ? '' : 'border-b border-line'}`;
+  const content = (<><Icon className="size-5 text-accent" /><span className="flex-1"><span className="block font-bold">{label}</span>{subtitle && <span className="block text-xs text-muted">{subtitle}</span>}</span>{!!count && <span className="rounded-full bg-primary px-2 text-xs font-bold text-white">{count}</span>}<ChevronRight className="size-4 text-muted" /></>);
+  return to ? <Link to={to} className={className}>{content}</Link> : <button type="button" onClick={onClick} className={className}>{content}</button>;
+}
+
+function Panel({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="flex flex-col gap-2"><h2 className="font-bold">{title}</h2>{children}</section>;
+}
+
+function Empty({ art, text }: { art: string; text: string }) {
+  return <div className="flex flex-col items-center gap-2 py-4"><img src={art} alt="" className="w-32" /><p className="text-sm text-muted">{text}</p></div>;
 }
