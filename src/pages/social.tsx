@@ -85,7 +85,6 @@ function Banner({ kind, subtitle }: { kind: keyof typeof BANNERS; subtitle?: str
 function CommunitiesSegment({ query }: { query: string }) {
   const { player } = useSession();
   const mine = useFetch((signal) => communitiesService.mine(signal), []);
-  const discover = useFetch((signal) => communitiesService.search({ page: 0, size: 10 }, signal), []);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [leaving, setLeaving] = useState<CommunityResponse | null>(null);
   const [creating, setCreating] = useState(false);
@@ -136,22 +135,6 @@ function CommunitiesSegment({ query }: { query: string }) {
         )}
       </ScreenState>
       <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
-      <h3 className="text-lg font-bold">Unirme a una comunidad</h3>
-      <ScreenState {...discover} onRetry={discover.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage="Todavía no hay comunidades para unirte.">
-        {(page) => page && (
-          <div className="flex flex-col gap-3">
-            {page.content.filter((c) => !filtered.some((m) => m.id === c.id)).map((community) => (
-              <Card key={community.id} className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate font-bold">{community.name}</p>
-                  <p className="text-xs text-muted">{community.memberCount} miembros</p>
-                </div>
-                <Button loading={pendingId === community.id} onClick={() => run(community, () => communitiesService.join(community.id))}>Unirme</Button>
-              </Card>
-            ))}
-          </div>
-        )}
-      </ScreenState>
       <button type="button" onClick={() => setShowHistory((v) => !v)} className="self-start text-sm font-bold text-muted">Historial de comunidades</button>
       {showHistory && (
         archived.length === 0
