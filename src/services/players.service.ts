@@ -13,6 +13,9 @@ export const playersService = {
   search: (name: string, params: PageParams, signal?: AbortSignal) =>
     http.get<Page<PlayerSummary>>('/players', { params: { ...params, name }, signal }).then((response) => response.data),
 
+  summary: (id: number, signal?: AbortSignal) =>
+    http.get<PlayerSummary>(`/players/${id}/summary`, { signal }).then((r) => r.data),
+
   suggestFdptmCategory: (birthDate: string, gender: Exclude<Gender, 'PREFER_NOT_TO_SAY'>, signal?: AbortSignal) =>
     http.post<{ category: string }>('/players/category-suggestion', { birthDate, gender }, { signal }).then((r) => r.data.category),
 

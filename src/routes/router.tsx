@@ -15,6 +15,9 @@ const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
 const CommunitiesPage = lazy(() => import('@/pages/communities'));
 const SocialPage = lazy(() => import('@/pages/social'));
+const CommunityDetailPage = lazy(() => import('@/pages/community-detail'));
+const ClubDetailPage = lazy(() => import('@/pages/club-detail'));
+const PublicPlayerPage = lazy(() => import('@/pages/public-player'));
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
@@ -23,6 +26,7 @@ const FindMatchPage = lazy(() => import('@/pages/find-match'));
 const MatchDetailPage = lazy(() => import('@/pages/match-detail'));
 const StatisticsPage = lazy(() => import('@/pages/statistics'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
+const ProfileSettingsPage = lazy(() => import('@/pages/profile-settings'));
 const NotFoundPage = lazy(() => import('@/pages/not-found'));
 
 const withSuspense = (node: ReactNode) => <Suspense fallback={null}>{node}</Suspense>;
@@ -53,6 +57,9 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/social', element: withSuspense(<SocialPage />) },
+          { path: '/social/community/:id', element: withSuspense(<CommunityDetailPage />) },
+          { path: '/social/club/:id', element: withSuspense(<ClubDetailPage />) },
+          { path: '/social/player/:id', element: withSuspense(<PublicPlayerPage />) },
           { path: '/communities', element: <Navigate to="/social" replace /> },
           { path: '/ranking', element: <RankingPage /> },
           { path: '/matches', element: <MatchesPage /> },
@@ -61,6 +68,7 @@ export const router = createBrowserRouter([
           { path: '/matches/:id', element: <MatchDetailPage /> },
           { path: '/statistics', element: <StatisticsPage /> },
           { path: '/profile', element: <ProfilePage /> },
+          { path: '/profile/settings', element: withSuspense(<ProfileSettingsPage />) },
         ],
       },
     ],

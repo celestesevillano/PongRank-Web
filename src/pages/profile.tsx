@@ -68,7 +68,7 @@ export default function ProfilePage() {
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-extrabold md:text-4xl">Perfil</h1>
-        <Link to="/profile" aria-label="Configuración" className="flex size-11 items-center justify-center rounded-xl hover:bg-surface">
+        <Link to="/profile/settings" aria-label="Configuración" className="flex size-11 items-center justify-center rounded-xl hover:bg-surface">
           <Settings className="size-6" />
         </Link>
       </header>
