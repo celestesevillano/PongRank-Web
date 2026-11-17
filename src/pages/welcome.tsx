@@ -1,84 +1,56 @@
-import { Target, TrendingUp, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Swords, Trophy, Users } from 'lucide-react';
 
 import { ButtonLink } from '@/components/ui/button-link';
 import { BrandImages } from '@/lib/brand';
 import { paths } from '@/routes/paths';
 
-const INTRO_DURATION_MS = 2190;
-const PLAYED_KEY = 'pongrank.intro-played';
-
 const FEATURES = [
-  { Icon: Users, label: 'Compite en tu comunidad' },
-  { Icon: TrendingUp, label: 'Mejora tu ranking' },
-  { Icon: Target, label: 'Reta a jugadores de tu nivel' },
+  { Icon: Trophy, title: 'Ranking real', text: 'Tu rating sube o baja con cada partida confirmada.' },
+  { Icon: Users, title: 'Comunidades y clubes', text: 'Juega con tu universidad, tu club o tus Pongmigos.' },
+  { Icon: Swords, title: 'Partidas en 4 pasos', text: 'Crea, encuentra rival, juega y confirma el resultado.' },
 ];
 
-const introAlreadyPlayed = () => {
-  try {
-    return sessionStorage.getItem(PLAYED_KEY) === '1' || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  } catch {
-    return true;
-  }
-};
-
 export default function WelcomePage() {
-  const [playing, setPlaying] = useState(() => !introAlreadyPlayed());
-
-  useEffect(() => {
-    if (!playing) return;
-    try {
-      sessionStorage.setItem(PLAYED_KEY, '1');
-    } catch {
-      // Sin almacenamiento la intro solo se repetirá en la próxima visita.
-    }
-    const timer = setTimeout(() => setPlaying(false), INTRO_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [playing]);
-
   return (
-    <main className={`flex min-h-screen flex-col items-center justify-between gap-6 px-4 py-10 ${playing ? '' : 'intro-static'}`}>
-      <div className="flex flex-1 items-center justify-center">
-        <div className="intro-stage" aria-hidden>
-          <img src={BrandImages.emblem} alt="" className="intro-emblem" />
-          {playing && (
-            <>
-              <img src={BrandImages.introPaddle} alt="" className="intro-paddle" />
-              <img src={BrandImages.introBall} alt="" className="intro-ball" />
-              <span className="intro-impact" />
-            </>
-          )}
+    <div className="min-h-screen bg-black text-white">
+      <header className="sticky top-0 z-20 border-b border-line bg-black/90 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+          <img src={BrandImages.wordmark} alt="PongRank" className="h-6" />
+          <div className="flex items-center gap-+2">
+            <Link to={paths.login} className="px-3 py-2 text-sm font-bold text-muted hover:text-white">Iniciar sesión</Link>
+            <ButtonLink to={paths.register}>Crear cuenta</ButtonLink>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="intro-brand flex w-full max-w-md flex-col items-center gap-2">
-        <img src={BrandImages.wordmark} alt="PongRank" width={460} height={56} className="h-14 w-full object-contain" />
-        <p className="text-xs tracking-[0.2em] text-muted">JUEGA. SUBE. COMPITE.</p>
-      </div>
+      <main className="mx-auto flex max-w-5xl flex-col gap-16 px-4 py-16">
+        <section className="flex flex-col items-center gap-6 text-center">
+          <img src={BrandImages.introPaddle} alt="" className="h-24" />
+          <h1 className="max-w-2xl text-4xl font-black italic sm:text-5xl">El ranking de tenis de mesa de tu comunidad</h1>
+          <p className="max-w-xl text-lg text-muted">PongRank une partidas, ranking y amigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <ButtonLink to={paths.register}>Crear cuenta</ButtonLink>
+            <ButtonLink to={paths.login} variant="secondary">Iniciar sesión</ButtonLink>
+          </div>
+        </section>
 
-      <section className="intro-actions flex w-full max-w-md flex-col gap-6" inert={playing || undefined} aria-hidden={playing || undefined}>
-        <h1 className="mt-4 text-center text-[26px] leading-tight font-bold">
-          Encuentra tu
-          <br />
-          próximo rival
-        </h1>
-        <ul className="grid grid-cols-3 gap-2">
-          {FEATURES.map(({ Icon, label }) => (
-            <li key={label} className="flex flex-col items-center gap-1 text-center">
-              <Icon aria-hidden className="size-7 text-brand" strokeWidth={1.8} />
-              <span className="text-xs text-muted">{label}</span>
-            </li>
+        <section className="grid gap-4 sm:grid-cols-3">
+          {FEATURES.map(({ Icon, title, text }) => (
+            <article key={title} className="rounded-2xl border border-line bg-surface p-5">
+              <span className="mb-3 flex size-10 items-center justify-center rounded-xl bg-brand/15 text-brand"><Icon className="size-5" /></span>
+              <h2 className="font-extrabold">{title}</h2>
+              <p className="mt-1 text-sm text-muted">{text}</p>
+            </article>
           ))}
-        </ul>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row">
-          <ButtonLink to={paths.login} variant="secondary" className="flex-1">
-            Ya tengo cuenta
-          </ButtonLink>
-          <ButtonLink to={paths.register} className="flex-1">
-            Empezar
-          </ButtonLink>
-        </div>
-      </section>
-    </main>
+        </section>
+
+        <section className="flex flex-col items-center gap-4 rounded-3xl border border-[#24616A] bg-[#081A20] p-8 text-center">
+          <img src={BrandImages.wordmark} alt="" className="h-5" />
+          <h2 className="text-2xl font-black">¿Listo para subir en el ranking?</h2>
+          <ButtonLink to={paths.register}>Empezar gratis</ButtonLink>
+        </section>
+      </main>
+    </div>
   );
 }
