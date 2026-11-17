@@ -1,5 +1,5 @@
-import { ChevronRight, Plus, Search, Send, UserPlus, Users } from 'lucide-react';
-import { useMemo, useState, type ReactNode } from 'react';
+import { ChevronRight, Plus, Search, Send, UserPlus, Users, X } from 'lucide-react';
+import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { ScreenState } from '@/components/common/screen-state';
@@ -8,11 +8,12 @@ import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { clubsService } from '@/services/clubs.service';
-import { communitiesService } from '@/services/communities.service';
+import { communitiesService, type CommunityCreateInput } from '@/services/communities.service';
 import { friendOf, friendshipsService } from '@/services/friendships.service';
 import { playersService } from '@/services/players.service';
 import type { Club, ClubMembership, CommunityResponse, Friendship, PlayerSummary } from '@/types/api';
 import { toApiError } from '@/utils/api-error';
+import { CREATABLE_COMMUNITY_TYPES, COMMUNITY_TYPE_LABELS, type CommunityType } from '@/utils/community-types';
 
 type Segment = 'communities' | 'clubs' | 'pongmigos';
 
@@ -89,7 +90,7 @@ function CommunitiesSegment({ query }: { query: string }) {
   const { player } = useSession();
   const mine = useFetch((signal) => communitiesService.mine(signal), []);
   const [pendingId, setPendingId] = useState<number | null>(null);
-  const [leaving, setLeaving] = useState<CommunityResponse | null>(null);
+  const [creating, setCreating] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
@@ -133,7 +134,8 @@ function CommunitiesSegment({ query }: { query: string }) {
           </div>
         )}
       </ScreenState>
-      <Button icon={Plus} onClick={() => setNotice('Crear comunidad estará disponible en el siguiente paso.')}>Crear comunidad</Button>
+      <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
+      {creating && <CreateCommunity onClose={() => setCreating(false)} onCreated={() => { setCreating(false); setNotice('Comunidad creada.'); mine.refetch(); }} />}
       <ConfirmDialog
         open={leaving !== null}
         title="¿Salir de la comunidad?"
@@ -329,6 +331,76 @@ function InfoPopup({ message, onClose }: { message: string; onClose: () => void 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal>
       <div className="flex w-full max-w-xs flex-col items-center gap-3 rounded-2xl bg-surface p-6 text-center">
         <div className="flex size-11 items-center justify-center rounded-full bg-accent/15 text-accent"><Users className="size-5" /></div>
+        <p className="text-sm text-muted">{message}</p>
+        <Button onClick={onClose}>Aceptar</Button>
+      </div>
+    </div>
+  );
+}
+
+function CreateCommunity({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [type, setType] = useState<CommunityType>('UNIVERSITY');
+  const [customLabel, setCustomLabel] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canSubmit = name.trim().length >= 3 && (type !== 'OTHER' || Boolean(customLabel.trim()));
+
+  const onSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!canSubmit || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const input: CommunityCreateInput = {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        communityType: type,
+        customLabel: type === 'OTHER' ? customLabel.trim() : undefined,
+      };
+      await communitiesService.create(input);
+      onCreated();
+    } catch (err) {
+      const api = toApiError(err);
+      setError(api.status === 409 ? 'Ya existe una comunidad con ese nombre.' : api.status === 403 ? 'Llegaste al límite de tu plan.' : api.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal>
+      <form onSubmit={onSubmit} className="flex w-full max-w-md flex-col gap-3 rounded-2xl bg-surface p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-extrabold">Crear comunidad</h2>
+          <button type="button" onClick={onClose} aria-label="Cerrar"><X className="size-5" /></button>
+        </div>
+        <label className="flex flex-col gap-1 text-sm font-semibold">
+          Nombre
+          <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3 outline-none focus:border-accent" />
+        </label>
+        <label className="flex flex-col gap-1 text-sm font-semibold">
+          Descripción
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2 outline-none focus:border-accent" />
+        </label>
+        <div className="flex flex-wrap gap-2">
+          {CREATABLE_COMMUNITY_TYPES.map((option) => (
+            <button key={option} type="button" onClick={() => setType(option)} className={`min-h-9 rounded-full px-3 text-sm font-bold ${type === option ? 'bg-primary text-white' : 'border border-line text-muted'}`}>
+              {COMMUNITY_TYPE_LABELS[option]}
+            </button>
+          ))}
+        </div>
+        {type === 'OTHER' && (
+          <input value={customLabel} onChange={(e) => setCustomLabel(e.target.value)} placeholder="Etiqueta personalizada" className="min-h-11 rounded-xl border border-line bg-black px-3 outline-none focus:border-accent" />
+        )}
+        {error && <p className="text-sm text-brand">{error}</p>}
+        <Button type="submit" loading={loading} disabled={!canSubmit}>Crear</Button>
+      </form>
+    </div>
+  );
+}
         <p className="text-sm text-muted">{message}</p>
         <Button onClick={onClose}>Aceptar</Button>
       </div>
