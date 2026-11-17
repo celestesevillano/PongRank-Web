@@ -6,6 +6,7 @@ import { BrandImages } from '@/lib/brand';
 import { PAID_PLANS, PLAN_ART, PLAN_LABEL, planBenefits } from '@/lib/plans';
 import { paths } from '@/routes/paths';
 import type { MembershipPlan } from '@/types/api';
+import './welcome.css';
 
 const FEATURES: { Icon: LucideIcon; title: string; text: string }[] = [
   { Icon: Trophy, title: 'Ranking real', text: 'Tu rating sube o baja con cada partida confirmada.' },
@@ -53,21 +54,21 @@ export default function WelcomePage() {
         <section className="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Halo color="red" className="-top-24 -left-24 size-[28rem]" />
           <Halo color="cyan" className="right-0 -bottom-24 size-96" />
-          <div className="flex max-w-xl flex-col items-start gap-5">
+          <div className="rise flex max-w-xl flex-col items-start gap-5">
             <span className="rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-sm font-extrabold tracking-wider text-accent uppercase">Tenis de mesa competitivo</span>
             <h1 className="text-4xl leading-[1.1] font-black italic sm:text-5xl lg:text-6xl">El ranking de tenis de mesa de tu comunidad</h1>
             <p className="text-lg text-muted">PongRank une partidas, ranking y Pongmigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
             <ButtonLink to={paths.register} className="mt-1 w-full sm:w-auto sm:min-w-56">Empezar gratis</ButtonLink>
           </div>
           <div className="flex justify-center">
-            <img src="/illustrations/landing/landing-hero.webp" alt="Pongi y Ranky jugando una partida de tenis de mesa" className="w-full max-w-xl drop-shadow-[0_0_60px_rgba(232,38,47,0.3)]" />
+            <img src="/illustrations/landing/landing-hero.webp" alt="Pongi y Ranky jugando una partida de tenis de mesa" className="float w-full max-w-xl drop-shadow-[0_0_60px_rgba(232,38,47,0.3)]" />
           </div>
         </section>
 
         {/* Qué es */}
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="rise grid gap-4 md:grid-cols-3">
           {FEATURES.map(({ Icon, title, text }) => (
-            <article key={title} className="rounded-2xl border border-line bg-surface p-6">
+            <article key={title} className="lift rounded-2xl border border-line bg-surface p-6">
               <Icon className="mb-4 size-8 text-accent" strokeWidth={1.75} aria-hidden />
               <h2 className="text-lg font-extrabold">{title}</h2>
               <p className="mt-1 text-muted">{text}</p>
@@ -79,7 +80,7 @@ export default function WelcomePage() {
         <section className="relative grid items-center gap-10 lg:grid-cols-2">
           <Halo color="cyan" className="top-0 left-0 size-96" />
           <div className="flex justify-center">
-            <img src="/illustrations/landing/landing-comunidades.webp" alt="Cuatro amigos revisando el ranking de su grupo junto a una mesa" className="w-full max-w-lg" loading="lazy" />
+            <img src="/illustrations/landing/landing-comunidades.webp" alt="Cuatro amigos revisando el ranking de su grupo junto a una mesa" className="float w-full max-w-xs" loading="lazy" />
           </div>
           <div className="flex flex-col items-start gap-4">
             <h2 className="text-3xl font-black sm:text-4xl">Encuentra con quién jugar</h2>
@@ -100,7 +101,7 @@ export default function WelcomePage() {
               return (
                 <article
                   key={plan}
-                  className={`flex flex-col gap-4 rounded-2xl border bg-surface p-5 ${recommended ? 'border-brand shadow-[0_0_40px_rgba(232,38,47,0.18)]' : 'border-line'}`}
+                  className={`lift flex flex-col gap-4 rounded-2xl border bg-surface p-5 ${recommended ? 'border-brand shadow-[0_0_40px_rgba(232,38,47,0.18)]' : 'border-line'}`}
                 >
                   {art ? (
                     <img src={art.image} alt="" className="aspect-[3/2] w-full rounded-xl object-cover" loading="lazy" />
@@ -143,7 +144,7 @@ export default function WelcomePage() {
             </ul>
           </div>
           <div className="flex justify-center">
-            <img src="/illustrations/landing/landing-coach.webp" alt="" className="max-h-80 w-auto object-contain" loading="lazy" />
+            <img src="/illustrations/landing/landing-coach.webp" alt="" className="float max-h-80 w-auto object-contain" loading="lazy" />
           </div>
         </section>
 
@@ -151,7 +152,7 @@ export default function WelcomePage() {
         <section id="clubes" className="relative grid scroll-mt-24 items-center gap-10 lg:grid-cols-2">
           <Halo color="red" className="bottom-0 left-0 size-96" />
           <div className="order-2 flex justify-center lg:order-1">
-            <img src="/illustrations/landing/landing-torneos.webp" alt="" className="max-h-96 w-auto object-contain" loading="lazy" />
+            <img src="/illustrations/landing/landing-torneos.webp" alt="" className="float max-h-96 w-auto object-contain" loading="lazy" />
           </div>
           <div className="order-1 flex flex-col items-start gap-4 lg:order-2">
             <span className="flex items-center gap-2 text-sm font-bold text-brand"><Shield className="size-4" aria-hidden />Plan Enterprise</span>
