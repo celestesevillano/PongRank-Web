@@ -24,7 +24,10 @@ export const clubsService = {
     http.get<Club>(`/clubs/${id}`, { signal }).then((r) => r.data),
 
   announcements: (clubId: number, signal?: AbortSignal) =>
-    http.get(`/clubs/${clubId}/announcements`, { signal }).then(({ data }) => data as { id: number; title: string; body: string; authorName: string; createdAt: string }[]),
+    http.get(`/clubs/${clubId}/announcements`, { signal }).then(({ data }) => {
+      const list = Array.isArray(data) ? data : data?.content ?? [];
+      return list as { id: number; title: string; body: string; authorName: string; createdAt: string }[];
+    }),
 
   createAnnouncement: (clubId: number, input: { title: string; body: string }) =>
     http.post(`/clubs/${clubId}/announcements`, input).then((r) => r.data),
