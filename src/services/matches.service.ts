@@ -16,7 +16,7 @@ export const ACTIVE_STATUSES = ['CREATED', 'PROPOSED_P1', 'PROPOSED_P2', 'DISPUT
 
 const TOURNAMENT_PAGE_SIZE = 50;
 
-export const MATCH_SORTS = { newest: 'createdAt,desc', oldest: 'createdAt,asc' } as const;
+export const MATCH_SORTS = { newest: 'createdAt,desc', oldest: 'createdAt,asc', lastConfirmed: 'confirmedAt,desc' } as const;
 export type MatchSort = keyof typeof MATCH_SORTS;
 
 type PlayerMatchesParams = PageParams & { status?: MatchStatus; sort?: MatchSort };
