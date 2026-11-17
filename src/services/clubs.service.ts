@@ -38,6 +38,12 @@ export const clubsService = {
   transfer: (clubId: number, playerId: number) =>
     http.patch(`/clubs/${clubId}/transfer`, { playerId }).then((r) => r.data),
 
+  tournaments: (clubId: number, signal?: AbortSignal) =>
+    http.get(`/tournaments/clubs/${clubId}`, { params: { page: 0, size: 20 }, signal }).then((r) => r.data?.content ?? []),
+
+  createTournament: (input: { clubId: number; name: string; type: 'INTERNAL' | 'OPEN'; matchFormat: 'BO3' | 'BO5' | 'BO7' }) =>
+    http.post('/tournaments', input).then((r) => r.data),
+
   pending: (clubId: number, signal?: AbortSignal) =>
     allPages<ClubMembership>(`/club-memberships/clubs/${clubId}/pending`, signal),
 

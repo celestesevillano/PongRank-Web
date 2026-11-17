@@ -25,6 +25,7 @@ const DashboardPage = lazy(() => import('@/pages/dashboard'));
 const RankingPage = lazy(() => import('@/pages/ranking'));
 const MatchesPage = lazy(() => import('@/pages/matches'));
 const TournamentsPage = lazy(() => import('@/pages/tournaments'));
+const CreateTournamentPage = lazy(() => import('@/pages/create-tournament'));
 const BracketPage = lazy(() => import('@/pages/bracket'));
 const AccountPage = lazy(() => import('@/pages/account'));
 const PrivacyPage = lazy(() => import('@/pages/privacy'));
@@ -70,6 +71,7 @@ export const router = createBrowserRouter([
           { path: '/social/register-club', element: withSuspense(<RegisterClubPage />) },
           { path: '/social/community/:id', element: withSuspense(<CommunityDetailPage />) },
           { path: '/social/club/:id', element: withSuspense(<ClubDetailPage />) },
+          { path: '/social/club/:id/create-tournament', element: withSuspense(<CreateTournamentPage />) },
           { path: '/social/player/:id', element: withSuspense(<PublicPlayerPage />) },
           { path: '/communities', element: <Navigate to="/social" replace /> },
           { path: '/ranking', element: <RankingPage /> },
