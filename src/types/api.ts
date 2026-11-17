@@ -46,6 +46,7 @@ export type PageParams = { page?: number; size?: number };
 export type PlayerSummary = {
   id: number;
   name: string;
+  username: string | null;
   ratingGlicko: number;
   categoryFdptm: string | null;
   federatedDeclared: boolean | null;
@@ -77,6 +78,7 @@ export type MatchResponse = {
   ratingDeltaP2: number | null;
   createdAt: string;
   confirmedAt: string | null;
+  scheduledAt: string | null;
 };
 
 export type RankingEntry = {
@@ -131,4 +133,29 @@ export type CommunityMember = {
   role: 'COMMUNITY_ADMIN' | 'MEMBER';
   status: string;
   joinedAt: string;
+};
+
+export type LiveMatchState = {
+  revision: number;
+  status: MatchStatus;
+  player1Ready: boolean;
+  player2Ready: boolean;
+  completedSets: SetScore[];
+  scorePlayer1: number;
+  scorePlayer2: number;
+  lastPointBy: 1 | 2 | null;
+  finished: boolean;
+};
+
+export type LiveMatchAction = 'READY' | 'POINT' | 'UNDO';
+
+export type Club = { id: number; name: string; address: string };
+
+export type ClubMembership = {
+  id: number;
+  clubId: number;
+  clubName: string;
+  status: 'APPROVED' | 'PENDING' | 'REJECTED' | 'CANCELLED' | 'LEFT';
+  role: 'CLUB_ADMIN' | 'MEMBER';
+  player: PlayerSummary | null;
 };

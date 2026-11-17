@@ -1,18 +1,6 @@
-import type { MatchResponse, MatchStatus } from '@/types/api';
+import type { MatchResponse } from '@/types/api';
 
-type StatusTone = 'pending' | 'action' | 'success' | 'danger' | 'neutral';
-
-export const STATUS_INFO: Record<MatchStatus, { label: string; tone: StatusTone }> = {
-  CREATED: { label: 'Por jugar', tone: 'pending' },
-  PROPOSED_P1: { label: 'Por confirmar', tone: 'action' },
-  PROPOSED_P2: { label: 'Por confirmar', tone: 'action' },
-  CONFIRMED: { label: 'Confirmada', tone: 'success' },
-  DISPUTED: { label: 'En disputa', tone: 'danger' },
-  CANCELLED: { label: 'Cancelada', tone: 'neutral' },
-  WALKOVER: { label: 'Walkover', tone: 'neutral' },
-};
-
-export const FORMAT_LABELS = { BO3: 'Al mejor de 3', BO5: 'Al mejor de 5', BO7: 'Al mejor de 7' } as const;
+export const FORMAT_LABELS = { BO3: 'Mejor de 3', BO5: 'Mejor de 5', BO7: 'Mejor de 7' } as const;
 
 export function matchPerspective(match: MatchResponse, playerId: number) {
   const isPlayer1 = match.player1.id === playerId;
@@ -34,3 +22,17 @@ export function matchPerspective(match: MatchResponse, playerId: number) {
     iWon: match.winnerId === null ? null : match.winnerId === playerId,
   };
 }
+
+export function matchPlace(match: MatchResponse) {
+  return match.communityName ?? (match.latitude !== null && match.longitude !== null ? 'Lugar de encuentro' : null);
+}
+
+const HAS_TIMEZONE = /(Z|[+-]\d{2}:?\d{2})$/;
+
+export const parseServerDate = (value: string | Date) => (value instanceof Date ? value : new Date(HAS_TIMEZONE.test(value) ? value : `${value}Z`));
+
+export const matchTime = (when: string | Date) => parseServerDate(when).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' });
+
+const SOURCE_LABELS = { FRIEND: 'Pongmigos', COMMUNITY: 'Comunidad', LOCATION: 'Partida libre', TOURNAMENT: 'Torneo' } as const;
+
+export const matchSource = (match: MatchResponse) => SOURCE_LABELS[match.matchType];

@@ -1,5 +1,5 @@
 import { http } from '@/services/http';
-import type { MatchDetail, MatchFormat, MatchResponse, MatchStatus, Page, PageParams, SetScore } from '@/types/api';
+import type { LiveMatchAction, LiveMatchState, MatchDetail, MatchFormat, MatchResponse, MatchStatus, Page, PageParams, SetScore } from '@/types/api';
 import { normalizePage } from '@/utils/pagination';
 
 export type Coordinates = { latitude: number; longitude: number };
@@ -9,9 +9,12 @@ export type MatchCreateInput = {
   format: MatchFormat;
   opponentId?: number;
   communityId?: number;
+  scheduledAt?: string;
 } & Partial<Coordinates>;
 
-export const ACTIVE_STATUSES = ['CREATED', 'PROPOSED_P1', 'PROPOSED_P2'] as const;
+export const ACTIVE_STATUSES = ['CREATED', 'PROPOSED_P1', 'PROPOSED_P2', 'DISPUTED'] as const;
+
+const TOURNAMENT_PAGE_SIZE = 50;
 
 export const MATCH_SORTS = { newest: 'createdAt,desc', oldest: 'createdAt,asc' } as const;
 export type MatchSort = keyof typeof MATCH_SORTS;
@@ -31,10 +34,24 @@ export const matchesService = {
     return pages.flatMap((page) => page.content).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   },
 
+  forTournaments: async (playerId: number, signal?: AbortSignal) => {
+    const matches: MatchResponse[] = [];
+    for (let page = 0; ; page++) {
+      const result = await matchesService.byPlayer(playerId, { page, size: TOURNAMENT_PAGE_SIZE, sort: 'newest' }, signal);
+      matches.push(...result.content.filter((match) => match.matchType === 'TOURNAMENT'));
+      if (result.last || result.content.length === 0) return matches;
+    }
+  },
+
   open: (location: Coordinates, signal?: AbortSignal) =>
     http.get<MatchResponse[]>('/matches/open', { params: location, signal }).then((r) => r.data),
 
   get: (matchId: number, signal?: AbortSignal) => http.get<MatchDetail>(`/matches/${matchId}`, { signal }).then((r) => r.data),
+
+  live: (matchId: number, signal?: AbortSignal) => http.get<LiveMatchState>(`/matches/${matchId}/live`, { signal }).then((r) => r.data),
+
+  updateLive: (matchId: number, action: LiveMatchAction, revision?: number) =>
+    http.post<LiveMatchState>(`/matches/${matchId}/live`, { action, revision }).then((r) => r.data),
 
   submitScore: (matchId: number, sets: SetScore[]) =>
     http.post<MatchDetail>(`/matches/${matchId}/submit`, { sets }).then((r) => r.data),
