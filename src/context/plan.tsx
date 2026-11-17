@@ -7,6 +7,7 @@ import type { MyPlanResponse } from '@/types/api';
 
 type PlanContextValue = {
   plan: MyPlanResponse | null;
+  loading: boolean;
   refresh: () => void;
   openPlans: () => void;
 };
@@ -15,7 +16,7 @@ const PlanContext = createContext<PlanContextValue | undefined>(undefined);
 
 export function PlanProvider({ children }: PropsWithChildren) {
   const [plansOpen, setPlansOpen] = useState(false);
-  const { data: plan, refetch: refresh } = useFetch((signal) => membershipsService.me(signal), []);
+  const { data: plan, loading, refetch: refresh } = useFetch((signal) => membershipsService.me(signal), []);
 
   useEffect(() => {
     const onVisible = () => document.visibilityState === 'visible' && refresh();
@@ -23,7 +24,7 @@ export function PlanProvider({ children }: PropsWithChildren) {
     return () => document.removeEventListener('visibilitychange', onVisible);
   }, [refresh]);
 
-  const value = useMemo<PlanContextValue>(() => ({ plan, refresh, openPlans: () => setPlansOpen(true) }), [plan, refresh]);
+  const value = useMemo<PlanContextValue>(() => ({ plan, loading, refresh, openPlans: () => setPlansOpen(true) }), [plan, loading, refresh]);
 
   return (
     <PlanContext.Provider value={value}>

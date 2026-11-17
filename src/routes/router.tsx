@@ -20,6 +20,7 @@ const MatchesPage = lazy(() => import('@/pages/matches'));
 const NewMatchPage = lazy(() => import('@/pages/new-match'));
 const FindMatchPage = lazy(() => import('@/pages/find-match'));
 const MatchDetailPage = lazy(() => import('@/pages/match-detail'));
+const StatisticsPage = lazy(() => import('@/pages/statistics'));
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const NotFoundPage = lazy(() => import('@/pages/not-found'));
 
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
           { path: '/matches/new', element: <NewMatchPage /> },
           { path: '/matches/find', element: <FindMatchPage /> },
           { path: '/matches/:id', element: <MatchDetailPage /> },
+          { path: '/statistics', element: <StatisticsPage /> },
           { path: '/profile', element: <ProfilePage /> },
         ],
       },

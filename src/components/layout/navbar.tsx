@@ -1,12 +1,14 @@
 import { CircleUser, House, LogOut, Swords, Trophy, Users, type LucideIcon } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 import { useSession } from '@/context/session';
 import { BrandImages } from '@/lib/brand';
 import { paths } from '@/routes/paths';
 
-const LINKS: { to: string; label: string; Icon: LucideIcon; end?: boolean }[] = [
-  { to: paths.home, label: 'Inicio', Icon: House, end: true },
+type NavItem = { to: string; label: string; Icon: LucideIcon; end?: boolean; section?: string[] };
+
+const LINKS: NavItem[] = [
+  { to: paths.home, label: 'Inicio', Icon: House, end: true, section: [paths.statistics] },
   { to: paths.communities, label: 'Comunidades', Icon: Users },
   { to: paths.matches, label: 'Partidas', Icon: Swords },
   { to: paths.ranking, label: 'Ranking', Icon: Trophy },
@@ -15,6 +17,8 @@ const LINKS: { to: string; label: string; Icon: LucideIcon; end?: boolean }[] = 
 
 export function Navbar() {
   const { player, signOut } = useSession();
+  const { pathname } = useLocation();
+  const inSection = (link: NavItem) => link.section?.some((path) => pathname.startsWith(path)) ?? false;
 
   return (
     <>
@@ -24,15 +28,7 @@ export function Navbar() {
           <nav aria-label="Principal" className="hidden gap-1 sm:flex">
             {LINKS.map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className="relative rounded-lg px-3 py-1.5 text-sm font-bold">
-                {({ isActive }) => (
-                  <>
-                    {isActive && <span aria-hidden className="nav-pill absolute inset-0 rounded-lg bg-brand" />}
-                    <span className={`relative flex items-center gap-1.5 ${isActive ? 'text-white' : 'text-muted hover:text-white'}`}>
-                      <link.Icon aria-hidden className="size-4" />
-                      {link.label}
-                    </span>
-                  </>
-                )}
+                {({ isActive }) => <DesktopLink link={link} active={isActive || inSection(link)} />}
               </NavLink>
             ))}
           </nav>
@@ -51,20 +47,36 @@ export function Navbar() {
           {LINKS.map((link) => (
             <li key={link.to}>
               <NavLink to={link.to} end={link.end} className="flex min-h-15 flex-col items-center justify-center gap-1 text-[11px] font-semibold">
-                {({ isActive }) => (
-                  <>
-                    <span className="relative flex size-8 items-center justify-center">
-                      {isActive && <span aria-hidden className="nav-pill absolute size-7.5 rounded-full bg-brand" />}
-                      <link.Icon aria-hidden className={`relative ${isActive ? 'size-[19px] text-white' : 'size-[23px] text-muted'}`} />
-                    </span>
-                    <span className={isActive ? 'text-brand' : 'text-muted'}>{link.label}</span>
-                  </>
-                )}
+                {({ isActive }) => <MobileLink link={link} active={isActive || inSection(link)} />}
               </NavLink>
             </li>
           ))}
         </ul>
       </nav>
+    </>
+  );
+}
+
+function DesktopLink({ link, active }: { link: NavItem; active: boolean }) {
+  return (
+    <>
+      {active && <span aria-hidden className="nav-pill absolute inset-0 rounded-lg bg-brand" />}
+      <span className={`relative flex items-center gap-1.5 ${active ? 'text-white' : 'text-muted hover:text-white'}`}>
+        <link.Icon aria-hidden className="size-4" />
+        {link.label}
+      </span>
+    </>
+  );
+}
+
+function MobileLink({ link, active }: { link: NavItem; active: boolean }) {
+  return (
+    <>
+      <span className="relative flex size-8 items-center justify-center">
+        {active && <span aria-hidden className="nav-pill absolute size-7.5 rounded-full bg-brand" />}
+        <link.Icon aria-hidden className={`relative ${active ? 'size-[19px] text-white' : 'size-[23px] text-muted'}`} />
+      </span>
+      <span className={active ? 'text-brand' : 'text-muted'}>{link.label}</span>
     </>
   );
 }
