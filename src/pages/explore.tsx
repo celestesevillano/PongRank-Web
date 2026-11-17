@@ -10,12 +10,35 @@ import { clubsService } from '@/services/clubs.service';
 import { communitiesService } from '@/services/communities.service';
 import { playersService } from '@/services/players.service';
 
+const FILTERS = [
+  { key: 'all', label: 'Todos' },
+  { key: 'players', label: 'Jugadores' },
+  { key: 'clubs', label: 'Clubes' },
+  { key: 'communities', label: 'Comunidades' },
+] as const;
+
+type Filter = (typeof FILTERS)[number]['key'];
+
 export default function ExplorePage() {
   const [query, setQuery] = useState('');
-  const debounced = useDebounce(query.trim());
-  const communities = useFetch((signal) => debounced.length >= 2 ? communitiesService.search({ name: debounced, page: 0, size: 10 }, signal) : Promise.resolve(null), [debounced]);
-  const clubs = useFetch((signal) => debounced.length >= 2 ? clubsService.search({ name: debounced, page: 0, size: 10 }, signal) : Promise.resolve(null), [debounced]);
-  const players = useFetch((signal) => debounced.length >= 2 ? playersService.search(debounced, { page: 0, size: 10 }, signal) : Promise.resolve(null), [debounced]);
+  const [filter, setFilter] = useState<Filter>('all');
+  const name = useDebounce(query.trim(), 300);
+  const ready = name.length >= 2;
+  const showPlayers = ready && (filter === 'all' || filter === 'players');
+  const showClubs = filter === 'all' || filter === 'clubs';
+  const showCommunities = filter === 'all' || filter === 'communities';
+
+  const communities = useFetch((signal) => showCommunities && ready ? communitiesService.search({ page: 0, size: 10, name }, signal) : Promise.resolve(null), [name, showCommunities, ready]);
+  const clubs = useFetch((signal) => showClubs && ready ? clubsService.search({ page: 0, size: 10, name }, signal) : Promise.resolve(null), [name, showClubs, ready]);
+  const players = useFetch((signal) => showPlayers ? playersService.search(name, { page: 0, size: 10 }, signal) : Promise.resolve(null), [name, showPlayers]);
+
+  const sections = [
+    showCommunities && { title: 'Comunidades', state: communities, empty: 'No encontramos comunidades con ese nombre.', render: (item: { id: number; name: string }) => <Card key={item.id}><Link to={`/social/community/${item.id}`} className="font-bold">{item.name}</Link></Card> },
+    showClubs && { title: 'Clubes', state: clubs, empty: 'No encontramos clubes con ese nombre.', render: (item: { id: number; name: string }) => <Card key={item.id}><Link to={`/social/club/${item.id}`} className="font-bold">{item.name}</Link></Card> },
+    showPlayers && { title: 'Jugadores', state: players, empty: 'No encontramos a nadie con ese nombre.', render: (item: { id: number; name: string }) => <Card key={item.id}><Link to={`/social/player/${item.id}`} className="font-bold">{item.name}</Link></Card> },
+  ].filter(Boolean) as { title: string; state: typeof communities; empty: string; render: (item: { id: number; name: string }) => React.ReactNode }[];
+
+  const allEmpty = ready && sections.length > 0 && sections.every((section) => section.state.data && section.state.data.content.length === 0);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-5">
@@ -25,30 +48,27 @@ export default function ExplorePage() {
         <Search className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted" />
         <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Comunidad, club o jugador" className="min-h-11 w-full rounded-xl border border-line bg-black py-2.5 pr-3 pl-10 outline-none focus:border-accent" />
       </label>
-      {debounced.length < 2 ? (
-        <img src="/illustrations/pongi-pongmigos-busqueda.webp" alt="" className="mx-auto w-40" />
-      ) : (
-        <>
-          <section className="flex flex-col gap-2">
-            <h2 className="font-bold">Comunidades</h2>
-            <ScreenState {...communities} onRetry={communities.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage="Sin comunidades.">
-              {(page) => page && <div className="flex flex-col gap-2">{page.content.map((item) => <Card key={item.id}><Link to={`/social/community/${item.id}`} className="font-bold">{item.name}</Link></Card>)}</div>}
-            </ScreenState>
-          </section>
-          <section className="flex flex-col gap-2">
-            <h2 className="font-bold">Clubes</h2>
-            <ScreenState {...clubs} onRetry={clubs.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage="Sin clubes aprobados.">
-              {(page) => page && <div className="flex flex-col gap-2">{page.content.map((item) => <Card key={item.id}><Link to={`/social/club/${item.id}`} className="font-bold">{item.name}</Link></Card>)}</div>}
-            </ScreenState>
-          </section>
-          <section className="flex flex-col gap-2">
-            <h2 className="font-bold">Jugadores</h2>
-            <ScreenState {...players} onRetry={players.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage="Sin jugadores.">
-              {(page) => page && <div className="flex flex-col gap-2">{page.content.map((item) => <Card key={item.id}><Link to={`/social/player/${item.id}`} className="font-bold">{item.name}</Link></Card>)}</div>}
-            </ScreenState>
-          </section>
-        </>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {FILTERS.map((item) => (
+          <button key={item.key} type="button" onClick={() => setFilter(item.key)} className={`min-h-9 rounded-full border px-4 text-sm font-bold ${filter === item.key ? 'border-primary bg-primary text-white' : 'border-line text-muted'}`}>{item.label}</button>
+        ))}
+      </div>
+      {!ready ? (
+        <Empty art="/illustrations/pongi-pongmigos-busqueda.webp" text="Busca una comunidad, un club o un jugador." />
+      ) : allEmpty ? (
+        <Empty art="/illustrations/pongi-pongmigos-busqueda.webp" text="No se encontraron resultados para esa búsqueda." />
+      ) : sections.map((section) => (
+        <section key={section.title} className="flex flex-col gap-2">
+          <h2 className="font-bold">{section.title}</h2>
+          <ScreenState {...section.state} onRetry={section.state.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage={section.empty} emptyImage="/illustrations/pongi-pongmigos-busqueda.webp">
+            {(page) => page && <div className="flex flex-col gap-2">{page.content.map(section.render)}</div>}
+          </ScreenState>
+        </section>
+      ))}
     </div>
   );
+}
+
+function Empty({ art, text }: { art: string; text: string }) {
+  return <div className="flex flex-col items-center gap-2 py-8"><img src={art} alt="" className="w-40" /><p className="text-sm text-muted">{text}</p></div>;
 }
