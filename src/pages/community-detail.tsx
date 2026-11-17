@@ -42,17 +42,6 @@ export default function CommunityDetailPage() {
     }
   };
 
-  const save = async () => {
-    try {
-      await communitiesService.update(communityId, { name: name.trim() });
-      setEditing(false);
-      detail.refetch();
-      setNotice('Comunidad actualizada.');
-    } catch (err) {
-      setNotice(toApiError(err).message);
-    }
-  };
-
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
       <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
