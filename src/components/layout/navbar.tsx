@@ -4,9 +4,9 @@ import { useSession } from '@/context/session';
 
 const LINKS = [
   { to: '/', label: 'Inicio', end: true },
-  { to: '/ranking', label: 'Ranking' },
-  { to: '/communities', label: 'Comunidades' },
+  { to: '/social', label: 'Social' },
   { to: '/matches', label: 'Partidas' },
+  { to: '/ranking', label: 'Ranking' },
   { to: '/profile', label: 'Perfil' },
 ];
 

@@ -149,7 +149,14 @@ export type LiveMatchState = {
 
 export type LiveMatchAction = 'READY' | 'POINT' | 'UNDO';
 
-export type Club = { id: number; name: string; address: string };
+export type Club = {
+  id: number;
+  name: string;
+  address: string;
+  description?: string | null;
+  status?: 'APPROVED' | 'PENDING' | 'REJECTED' | 'PAUSED' | 'DELETED';
+  memberCount?: number | null;
+};
 
 export type ClubMembership = {
   id: number;
