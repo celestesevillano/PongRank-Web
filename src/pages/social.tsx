@@ -71,9 +71,10 @@ export default function SocialPage() {
 function Banner({ kind, subtitle }: { kind: keyof typeof BANNERS; subtitle?: string }) {
   const banner = BANNERS[kind];
   return (
-    <div className="relative flex h-36 items-center overflow-hidden rounded-2xl border md:h-40" style={{ background: banner.bg, borderColor: banner.border }}>
-      <img src={banner.art} alt="" className="pointer-events-none absolute inset-y-0 right-0 h-full w-auto max-w-[55%] object-contain object-right" />
-      <div className="relative z-10 flex h-full max-w-[50%] flex-col justify-center gap-1 p-5">
+    <div className="relative flex h-36 items-center overflow-hidden rounded-2xl border border-line md:h-40">
+      <img src={banner.art} alt="" className="absolute inset-0 size-full object-cover object-right" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+      <div className="relative z-10 flex h-full max-w-[55%] flex-col justify-center gap-1 p-5">
         <h2 className="text-lg font-extrabold md:text-xl">{banner.title}</h2>
         {subtitle && <p className="text-sm font-semibold" style={{ color: banner.accent }}>{subtitle}</p>}
       </div>
@@ -84,6 +85,7 @@ function Banner({ kind, subtitle }: { kind: keyof typeof BANNERS; subtitle?: str
 function CommunitiesSegment({ query }: { query: string }) {
   const { player } = useSession();
   const mine = useFetch((signal) => communitiesService.mine(signal), []);
+  const discover = useFetch((signal) => communitiesService.search({ page: 0, size: 10 }, signal), []);
   const [pendingId, setPendingId] = useState<number | null>(null);
   const [leaving, setLeaving] = useState<CommunityResponse | null>(null);
   const [creating, setCreating] = useState(false);
@@ -133,6 +135,22 @@ function CommunitiesSegment({ query }: { query: string }) {
         )}
       </ScreenState>
       <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
+      <h3 className="text-lg font-bold">Unirme a una comunidad</h3>
+      <ScreenState {...discover} onRetry={discover.refetch} isEmpty={(data) => !data || data.content.length === 0} emptyMessage="Todavía no hay comunidades para unirte.">
+        {(page) => page && (
+          <div className="flex flex-col gap-3">
+            {page.content.filter((c) => !filtered.some((m) => m.id === c.id)).map((community) => (
+              <Card key={community.id} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate font-bold">{community.name}</p>
+                  <p className="text-xs text-muted">{community.memberCount} miembros</p>
+                </div>
+                <Button loading={pendingId === community.id} onClick={() => run(community, () => communitiesService.join(community.id))}>Unirme</Button>
+              </Card>
+            ))}
+          </div>
+        )}
+      </ScreenState>
       <button type="button" onClick={() => setShowHistory((v) => !v)} className="self-start text-sm font-bold text-muted">Historial de comunidades</button>
       {showHistory && (
         archived.length === 0
