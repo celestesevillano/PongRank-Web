@@ -95,6 +95,7 @@ function CommunitiesSegment({ query }: { query: string }) {
     const q = query.trim().toLowerCase();
     return q ? list.filter((c) => c.name.toLowerCase().includes(q)) : list;
   }, [mine.data, query]);
+  const archived = (mine.data ?? []).filter((c) => c.status === 'DELETED' || c.status === 'ARCHIVED');
 
   const run = async (community: CommunityResponse, action: () => Promise<unknown>) => {
     setPendingId(community.id);
@@ -133,7 +134,16 @@ function CommunitiesSegment({ query }: { query: string }) {
       </ScreenState>
       <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
       <button type="button" onClick={() => setShowHistory((v) => !v)} className="self-start text-sm font-bold text-muted">Historial de comunidades</button>
-      {showHistory && <p className="text-sm text-muted">Las comunidades archivadas o eliminadas aparecen aquí cuando el servidor las marca como inactivas.</p>}
+      {showHistory && (
+        archived.length === 0
+          ? <p className="text-sm text-muted">No tienes comunidades archivadas.</p>
+          : archived.map((community) => (
+            <Card key={community.id}>
+              <p className="font-bold">{community.name}</p>
+              <p className="text-xs text-muted">{community.status === 'DELETED' ? 'Eliminada' : 'Archivada'}</p>
+            </Card>
+          ))
+      )}
       {creating && <CreateCommunity onClose={() => setCreating(false)} onCreated={() => { setCreating(false); setNotice('Comunidad creada.'); mine.refetch(); }} />}
       <ConfirmDialog
         open={leaving !== null}
