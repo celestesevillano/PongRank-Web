@@ -1,9 +1,7 @@
-import { Bot, ChartNoAxesColumnIncreasing, ChevronRight, Plus, RotateCw, Search, Smartphone, Trophy, X } from 'lucide-react';
-import { useState } from 'react';
+import { Bot, ChartNoAxesColumnIncreasing, ChevronRight, Plus, RotateCw, Search, Trophy, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { CardLighting } from '@/components/common/card-lighting';
-import { Modal } from '@/components/common/modal';
 import { ShortcutBanner } from '@/components/home/shortcut-banner';
 import { Button } from '@/components/ui/button';
 import { ButtonLink } from '@/components/ui/button-link';
@@ -28,9 +26,7 @@ export default function DashboardPage() {
   const { player } = useSession();
   const { plan, openPlans } = usePlan();
   const navigate = useNavigate();
-  const [coachNotice, setCoachNotice] = useState(false);
   const playerId = player!.id;
-  const coachUnlocked = plan?.coachAccess === true;
   const statisticsLocked = !plan || plan.plan === 'FREEMIUM';
   const firstName = player!.name.trim().split(/\s+/)[0] || 'jugador';
 
@@ -106,12 +102,11 @@ export default function DashboardPage() {
         />
         <ShortcutBanner
           title="Coach"
-          subtitle={coachUnlocked ? 'Postura y movimiento' : 'Requiere Pro'}
-          locked={!coachUnlocked}
+          subtitle="Solo en la app"
+          locked
           Icon={Bot}
           artwork={HomeArt.coach}
           coach
-          onClick={() => (coachUnlocked ? setCoachNotice(true) : openPlans())}
         />
       </div>
 
@@ -139,16 +134,6 @@ export default function DashboardPage() {
           )}
         </section>
       )}
-
-      <Modal open={coachNotice} title="Coach está en la app" onClose={() => setCoachNotice(false)}>
-        <div className="mt-3 flex flex-col gap-4">
-          <p className="flex gap-2 text-[15px] text-muted">
-            <Smartphone aria-hidden className="mt-0.5 size-5 shrink-0 text-accent" />
-            Pongi analiza tu postura con la cámara del teléfono. Abre PongRank en tu celular para entrenar con Coach.
-          </p>
-          <Button onClick={() => setCoachNotice(false)}>Entendido</Button>
-        </div>
-      </Modal>
     </div>
   );
 }

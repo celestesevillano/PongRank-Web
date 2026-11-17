@@ -77,6 +77,7 @@ export type CommunityResponse = {
   description: string | null;
   communityType: 'UNIVERSITY' | 'SCHOOL' | 'PUBLIC_PARK' | 'PLAY_GROUP' | 'OTHER';
   memberCount: number;
+  status?: 'ACTIVE' | 'DELETED' | 'ARCHIVED' | 'GRACE';
 };
 
 export type Page<T> = {

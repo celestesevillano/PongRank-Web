@@ -36,7 +36,8 @@ export default function ProfileSettingsPage() {
       <Card className="flex flex-col gap-3">
         <p className="font-bold">Cuenta</p>
         <p className="text-sm text-muted">{player?.email}</p>
-        <Link to="/forgot-password" className="text-sm font-bold text-accent">Cambiar contraseña</Link>
+        <Link to="/profile/account" className="text-sm font-bold text-accent">Cuenta</Link>
+        <Link to="/profile/privacy" className="text-sm font-bold text-accent">Privacidad</Link>
       </Card>
       <Card className="flex flex-col gap-3">
         <div className="flex items-center justify-between">

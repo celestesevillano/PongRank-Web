@@ -95,6 +95,7 @@ function CommunitiesSegment({ query }: { query: string }) {
     const q = query.trim().toLowerCase();
     return q ? list.filter((c) => c.name.toLowerCase().includes(q)) : list;
   }, [mine.data, query]);
+  const archived = (mine.data ?? []).filter((c) => c.status === 'DELETED' || c.status === 'ARCHIVED');
 
   const run = async (community: CommunityResponse, action: () => Promise<unknown>) => {
     setPendingId(community.id);
@@ -116,7 +117,7 @@ function CommunitiesSegment({ query }: { query: string }) {
     <div className="flex flex-col gap-4">
       <Banner kind="communities" subtitle={`${filtered.length} ${filtered.length === 1 ? 'comunidad' : 'comunidades'}`} />
       <h3 className="text-lg font-bold">Tu lista</h3>
-      <ScreenState {...mine} onRetry={mine.refetch} isEmpty={() => filtered.length === 0} emptyMessage="Aún no perteneces a una comunidad. Encuentra una desde Buscar en Social.">
+      <ScreenState {...mine} onRetry={mine.refetch} isEmpty={() => filtered.length === 0} emptyMessage="Aún no perteneces a una comunidad. Encuentra una desde Buscar en Social." emptyImage="/illustrations/pongrank-comunidades-banner.webp">
         {() => (
           <div className="flex flex-col gap-3">
             {filtered.map((community) => (
@@ -133,7 +134,16 @@ function CommunitiesSegment({ query }: { query: string }) {
       </ScreenState>
       <Button icon={Plus} onClick={() => setCreating(true)}>Crear comunidad</Button>
       <button type="button" onClick={() => setShowHistory((v) => !v)} className="self-start text-sm font-bold text-muted">Historial de comunidades</button>
-      {showHistory && <p className="text-sm text-muted">Las comunidades archivadas o eliminadas aparecen aquí cuando el servidor las marca como inactivas.</p>}
+      {showHistory && (
+        archived.length === 0
+          ? <p className="text-sm text-muted">No tienes comunidades archivadas.</p>
+          : archived.map((community) => (
+            <Card key={community.id}>
+              <p className="font-bold">{community.name}</p>
+              <p className="text-xs text-muted">{community.status === 'DELETED' ? 'Eliminada' : 'Archivada'}</p>
+            </Card>
+          ))
+      )}
       {creating && <CreateCommunity onClose={() => setCreating(false)} onCreated={() => { setCreating(false); setNotice('Comunidad creada.'); mine.refetch(); }} />}
       <ConfirmDialog
         open={leaving !== null}
@@ -192,7 +202,7 @@ function ClubsSegment({ query }: { query: string }) {
         </div>
       )}
       <h3 className="text-lg font-bold">Tu lista</h3>
-      <ScreenState {...managed} onRetry={managed.refetch} isEmpty={(data) => data.length === 0} emptyMessage="Todavía no administras un club.">
+      <ScreenState {...managed} onRetry={managed.refetch} isEmpty={(data) => data.length === 0} emptyMessage="Todavía no administras un club." emptyImage="/illustrations/pongrank-clubes-social-equipo.webp">
         {(list) => (
           <div className="flex flex-col gap-3">
             {list.map((club) => (
@@ -298,7 +308,7 @@ function PongmigosSegment({ query }: { query: string }) {
       )}
 
       <h3 className="text-lg font-bold">Tu lista</h3>
-      <ScreenState {...accepted} onRetry={accepted.refetch} isEmpty={() => friends.length === 0} emptyMessage="Aún no tienes Pongmigos">
+      <ScreenState {...accepted} onRetry={accepted.refetch} isEmpty={() => friends.length === 0} emptyMessage="Aún no tienes Pongmigos" emptyImage="/illustrations/pongi-ranky-pongmigos.webp">
         {() => (
           <div className="flex flex-col gap-3">
             {friends.map((f) => {

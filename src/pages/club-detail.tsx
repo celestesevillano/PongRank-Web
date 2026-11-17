@@ -21,6 +21,7 @@ export default function ClubDetailPage() {
   const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [transferring, setTransferring] = useState(false);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [title, setTitle] = useState('');
@@ -53,7 +54,23 @@ export default function ClubDetailPage() {
               {data.description && <p className="mt-1 text-sm text-muted">{data.description}</p>}
               <p className="mt-1 text-xs font-bold text-gold">{data.status === 'PENDING' ? 'En revisión' : data.status === 'APPROVED' ? 'Aprobado' : data.status}</p>
             </div>
-            {isAdmin && <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>}
+            {isAdmin && (
+              <div className="flex gap-2">
+                <Button variant="secondary" onClick={() => { setName(data.name); setAddress(data.address); setEditing(true); }}>Editar club</Button>
+                <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
+              </div>
+            )}
+            {transferring && (
+              <Card className="flex flex-col gap-2">
+                <p className="font-bold">Elige el nuevo admin</p>
+                {(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((member) => (
+                  <Button key={member.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, member.player!.id); setTransferring(false); members.refetch(); }}>
+                    {member.player?.name}
+                  </Button>
+                ))}
+                <Button variant="secondary" onClick={() => setTransferring(false)}>Cancelar</Button>
+              </Card>
+            )}
             {editing && (
               <Card className="flex flex-col gap-2">
                 <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" />
@@ -85,7 +102,12 @@ export default function ClubDetailPage() {
             )}
             <section className="flex flex-col gap-2">
               <h2 className="flex items-center gap-2 font-bold"><Megaphone className="size-4" /> Anuncios</h2>
-              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : (announcements.data ?? []).map((item) => (
+              {(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? (
+                <div className="flex flex-col items-center gap-2 py-4">
+                  <img src="/illustrations/club-vacio-avisos.webp" alt="" className="w-32" />
+                  <p className="text-sm text-muted">Sin anuncios.</p>
+                </div>
+              ) : (announcements.data ?? []).map((item) => (
                 <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>
               ))}
             </section>
