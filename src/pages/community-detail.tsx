@@ -22,6 +22,7 @@ export default function CommunityDetailPage() {
   const ranking = useFetch((signal) => communitiesService.ranking(communityId, { page: 0, size: 5 }, signal), [communityId]);
   const [leaving, setLeaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [transferring, setTransferring] = useState(false);
   const [name, setName] = useState('');
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -63,8 +64,31 @@ export default function CommunityDetailPage() {
                 <p className="text-sm text-muted">{COMMUNITY_TYPE_LABELS[community.communityType]} · {community.memberCount} miembros</p>
                 {community.description && <p className="mt-1 text-sm text-muted">{community.description}</p>}
               </div>
-              {isAdmin && <Button variant="secondary" icon={Pencil} onClick={() => { setName(community.name); setEditing(true); }}>Editar</Button>}
+              {isAdmin && (
+                <div className="flex gap-2">
+                  <Button variant="secondary" icon={Pencil} onClick={() => { setName(community.name); setEditing(true); }}>Editar</Button>
+                  <Button variant="secondary" onClick={() => setTransferring(true)}>Transferir admin</Button>
+                </div>
+              )}
             </div>
+            {transferring && (
+              <Card className="flex flex-col gap-2">
+                <p className="font-bold">Elige el nuevo admin</p>
+                {(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((member) => (
+                  <Button key={member.playerId} variant="secondary" onClick={async () => {
+                    try {
+                      await communitiesService.transfer(communityId, member.playerId);
+                      setNotice(`Admin transferido a ${member.playerName}.`);
+                      setTransferring(false);
+                      members.refetch();
+                    } catch (err) {
+                      setNotice(toApiError(err).message);
+                    }
+                  }}>{member.playerName}</Button>
+                ))}
+                <Button variant="secondary" onClick={() => setTransferring(false)}>Cancelar</Button>
+              </Card>
+            )}
             {editing && (
               <Card className="flex flex-col gap-2">
                 <input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3 outline-none focus:border-accent" />

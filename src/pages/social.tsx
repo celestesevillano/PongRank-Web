@@ -1,5 +1,5 @@
 import { ChevronRight, Plus, Search, Send, UserPlus, Users, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
 import { ConfirmDialog } from '@/components/common/confirm-dialog';
@@ -32,22 +32,16 @@ const BANNERS = {
 
 export default function SocialPage() {
   const [segment, setSegment] = useState<Segment>('communities');
-  const [query, setQuery] = useState('');
+  const [query] = useState('');
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
       <h1 className="text-3xl font-extrabold md:text-4xl">Social</h1>
 
-      <label className="relative">
+      <Link to="/social/explore" className="relative">
         <Search aria-hidden className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-muted" />
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar en Social"
-          className="min-h-11 w-full rounded-xl border border-line bg-black py-2.5 pr-3 pl-10 outline-none focus:border-accent"
-        />
-      </label>
+        <span className="flex min-h-11 w-full items-center rounded-xl border border-line bg-black py-2.5 pr-3 pl-10 text-muted">Buscar en Social</span>
+      </Link>
 
       <div role="tablist" className="flex w-full rounded-xl bg-surface p-1">
         {SEGMENTS.map((item) => {
@@ -153,6 +147,7 @@ function CommunitiesSegment({ query }: { query: string }) {
 }
 
 function ClubsSegment({ query }: { query: string }) {
+  const navigate = useNavigate();
   const { player } = useSession();
   const managed = useFetch((signal) => clubsService.managed(signal), []);
   const memberships = useFetch((signal) => player ? clubsService.memberships(player.id, signal) : Promise.resolve([] as ClubMembership[]), [player?.id]);
@@ -224,7 +219,7 @@ function ClubsSegment({ query }: { query: string }) {
           </div>
         )}
       </ScreenState>
-      <Button icon={Plus} variant="secondary" onClick={() => setNotice('Registrar club está disponible con el plan Enterprise.')}>Registrar club</Button>
+      <Button icon={Plus} variant="secondary" onClick={() => navigate('/social/register-club')}>Registrar club</Button>
       {notice && <InfoPopup message={notice} onClose={() => setNotice(null)} />}
     </div>
   );

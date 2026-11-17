@@ -14,6 +14,8 @@ const RegisterCommunityPage = lazy(() => import('@/pages/register-community'));
 const ForgotPasswordPage = lazy(() => import('@/pages/forgot-password'));
 const ResetPasswordPage = lazy(() => import('@/pages/reset-password'));
 const SocialPage = lazy(() => import('@/pages/social'));
+const ExplorePage = lazy(() => import('@/pages/explore'));
+const RegisterClubPage = lazy(() => import('@/pages/register-club'));
 const CommunityDetailPage = lazy(() => import('@/pages/community-detail'));
 const ClubDetailPage = lazy(() => import('@/pages/club-detail'));
 const PublicPlayerPage = lazy(() => import('@/pages/public-player'));
@@ -56,6 +58,8 @@ export const router = createBrowserRouter([
         children: [
           { path: '/', element: <DashboardPage /> },
           { path: '/social', element: withSuspense(<SocialPage />) },
+          { path: '/social/explore', element: withSuspense(<ExplorePage />) },
+          { path: '/social/register-club', element: withSuspense(<RegisterClubPage />) },
           { path: '/social/community/:id', element: withSuspense(<CommunityDetailPage />) },
           { path: '/social/club/:id', element: withSuspense(<ClubDetailPage />) },
           { path: '/social/player/:id', element: withSuspense(<PublicPlayerPage />) },
