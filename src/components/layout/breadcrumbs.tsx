@@ -4,6 +4,7 @@ import { useFetch } from '@/hooks/use-fetch';
 import { clubsService } from '@/services/clubs.service';
 import { communitiesService } from '@/services/communities.service';
 import { playersService } from '@/services/players.service';
+import { tournamentsService } from '@/services/tournaments.service';
 
 const LABELS: Record<string, string> = {
   social: 'Social',
@@ -33,7 +34,7 @@ export function Breadcrumbs() {
 
   return (
     <nav aria-label="Breadcrumb" className="border-b border-line">
-      <ol className="mx-auto flex max-w-7xl flex-wrap items-center gap-1.5 px-4 py-2.5 text-sm text-muted sm:px-8">
+      <ol className="mx-auto flex max-w-7xl flex-wrap items-center gap-1.5 px-4 py-2.5 text-sm text-muted">
         <li>
           <Link to="/home" className="hover:text-white">Inicio</Link>
         </li>
@@ -67,5 +68,6 @@ function useEntityName(segments: string[]) {
   const club = useFetch((signal) => valid && parent === 'club' ? clubsService.detail(id, signal) : Promise.resolve(null), [parent, id]);
   const community = useFetch((signal) => valid && parent === 'community' ? communitiesService.detail(id, signal) : Promise.resolve(null), [parent, id]);
   const player = useFetch((signal) => valid && parent === 'player' ? playersService.summary(id, signal) : Promise.resolve(null), [parent, id]);
-  return club.data?.name ?? community.data?.name ?? player.data?.name ?? null;
+  const tournament = useFetch((signal) => valid && parent === 'tournaments' ? tournamentsService.detail(id, signal) : Promise.resolve(null), [parent, id]);
+  return club.data?.name ?? community.data?.name ?? player.data?.name ?? tournament.data?.name ?? null;
 }

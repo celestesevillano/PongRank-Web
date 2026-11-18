@@ -21,8 +21,8 @@ export function formatTournamentDate(startDate?: string | null) {
 export function TournamentBanner({ tournament, children }: { tournament: Tournament; children?: ReactNode }) {
   const date = formatTournamentDate(tournament.startDate);
   return (
-    <div className="relative flex min-h-36 flex-col justify-center gap-1 overflow-hidden rounded-2xl border border-[#71313B] bg-gradient-to-r from-[#3A0F17] to-[#130B0D] p-5">
-      <img src="/illustrations/torneo-copa-banner.webp" alt="" className="absolute inset-y-0 right-0 h-full w-3/5 object-cover object-right" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
+    <div className="relative flex min-h-40 flex-col justify-center gap-1 overflow-hidden rounded-2xl border border-[#71313B] p-5">
+      <img src="/illustrations/torneo-copa-banner.webp" alt="" className="pointer-events-none absolute inset-y-0 right-0 h-full w-auto max-w-none select-none" style={{ maskImage: 'linear-gradient(to right, transparent 0%, #000 30%)', WebkitMaskImage: 'linear-gradient(to right, transparent 0%, #000 30%)' }} onError={(event) => { event.currentTarget.style.display = 'none'; }} />
       <div className="relative flex flex-col gap-1">
         <p className="inline-flex items-center gap-1 text-sm font-bold text-primary"><Trophy className="size-4" /> {tournamentStatusLabel(tournament)}</p>
         <h1 className="text-2xl font-extrabold sm:text-3xl">{tournament.name}</h1>
