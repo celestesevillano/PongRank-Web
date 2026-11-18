@@ -47,7 +47,7 @@ export default function DashboardPage() {
   const hasActivity = recentMatches.length > 0 || Boolean(recent.error);
 
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+    <div className="flex w-full flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <h1 className="text-[34px] leading-tight font-extrabold sm:text-5xl">
           Hola, <span className="text-accent">{firstName}</span>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      <div className={`grid items-start gap-6 ${hasActivity ? 'lg:grid-cols-[1.7fr_1fr]' : ''}`}>
+      <div className={`grid items-stretch gap-6 ${hasActivity ? 'lg:grid-cols-[1.7fr_1fr]' : ''}`}>
         <div className="flex flex-col gap-6">
           <section aria-label="Tu rating" className="relative overflow-hidden rounded-2xl border border-[#248997] bg-[#071C23] p-6 sm:p-8">
             <CardLighting color={CYAN} court />

@@ -36,7 +36,7 @@ export function WhatsappCard() {
           <p className="font-bold">Compartir WhatsApp</p>
           <p className="text-sm text-muted">Para coordinar partidas confirmadas</p>
         </div>
-        <button type="button" role="switch" aria-checked={share} aria-label="Compartir WhatsApp" disabled={busy} onClick={() => void save(!share)} className={`relative h-7 w-12 rounded-full ${share ? 'bg-accent' : 'bg-line'}`}>
+        <button type="button" role="switch" aria-checked={share} aria-label="Compartir WhatsApp" disabled={busy} onClick={() => void save(!share)} className={`relative h-7 w-12 rounded-full ${share ? 'bg-primary' : 'bg-line'}`}>
           <span className={`absolute top-0.5 size-6 rounded-full bg-white transition ${share ? 'left-5' : 'left-0.5'}`} />
         </button>
       </div>
