@@ -12,7 +12,7 @@ export function AppLayout() {
       <div className="min-h-screen">
         <Navbar />
         <Breadcrumbs />
-        <main className="mx-auto max-w-5xl px-4 pt-4 pb-24 sm:pb-6">
+        <main className="mx-auto max-w-7xl px-4 pt-4 pb-24 sm:px-8 sm:pb-6 [&_.max-w-2xl]:max-w-4xl [&_.max-w-3xl]:max-w-5xl">
           <Suspense
             fallback={
               <div className="flex justify-center py-12">

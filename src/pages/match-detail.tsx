@@ -418,7 +418,15 @@ function MatchContent({ match, onChanged }: { match: MatchDetail; onChanged: () 
 }
 
 function Panel({ children, highlighted = false }: { children: ReactNode; highlighted?: boolean }) {
-  return <div className={`flex flex-col gap-3 rounded-2xl border p-4 ${highlighted ? 'border-[#71313B] bg-[#1A0E11]' : 'border-line bg-surface'}`}>{children}</div>;
+  if (highlighted) {
+    return (
+      <div className="relative isolate flex flex-col gap-3 p-4">
+        <span aria-hidden className="pointer-events-none absolute top-0 left-1/2 -z-10 size-80 -translate-x-1/2 rounded-full blur-3xl" style={{ background: 'radial-gradient(closest-side, rgba(232,38,47,0.28), transparent)' }} />
+        {children}
+      </div>
+    );
+  }
+  return <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4">{children}</div>;
 }
 
 function ReadyPlayer({ label, ready }: { label: string; ready: boolean }) {

@@ -105,7 +105,7 @@ function StatisticsView({
     delta != null && delta < 0 ? "text-[#FF8990]" : "text-accent";
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
       <Hero />
 
       <section
@@ -139,7 +139,8 @@ function StatisticsView({
         onRetry={history.refetch}
       >
         {({ stats }) => (
-          <>
+          <div className="grid items-start gap-4 lg:grid-cols-2">
+            <div className="flex flex-col gap-4">
             {selected && (
               <RatingChart
                 period={period}
@@ -171,12 +172,15 @@ function StatisticsView({
                 </div>
               </section>
             )}
+            </div>
+            <div className="flex flex-col gap-4">
             <Results wins={stats.wins} losses={stats.losses} />
             <div className="grid gap-2 sm:grid-cols-2">
               <StreakCard streak={stats.streak} />
               <BestVictoryCard best={stats.best} />
             </div>
-          </>
+            </div>
+          </div>
         )}
       </ScreenState>
     </div>
