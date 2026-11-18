@@ -24,6 +24,8 @@ export default function BracketPage() {
           const rounds = [...new Set(fixtures.map((m) => m.round))].sort((a, b) => a - b);
           const finalRound = rounds[rounds.length - 1];
           const root = fixtures.filter((m) => m.round === finalRound).sort((a, b) => a.bracketPosition - b.bracketPosition)[0];
+          const halfRounds = rounds.slice(0, -1);
+          const [leftNode, rightNode] = root ? childrenOf(root, fixtures) : [];
           const myMatch = fixtures.find((m) => m.status === 'SCHEDULED' && m.matchId && (m.player1?.id === player?.id || m.player2?.id === player?.id));
           return (
             <>
@@ -35,13 +37,17 @@ export default function BracketPage() {
               <h2 className="text-lg font-extrabold">Diagrama</h2>
               {fixtures.length === 0 || !root ? <p className="text-sm text-muted">El cuadro todavía no tiene partidos.</p> : (
                 <div className="overflow-x-auto pb-4">
-                  <div className="flex w-max min-w-full flex-col items-end">
+                  <div className="mx-auto flex w-max min-w-full flex-col items-center">
                     <div className="mb-2 flex">
-                      {rounds.map((round, index) => (
-                        <p key={round} className={`${index === rounds.length - 1 ? 'w-60' : 'w-66'} text-center text-xs font-bold`} style={{ color: GOLD }}>{roundName(rounds, index, fixtures)}</p>
-                      ))}
+                      {halfRounds.map((round, index) => <p key={`l${round}`} className="w-66 text-center text-xs font-bold" style={{ color: GOLD }}>{roundName(rounds, index, fixtures)}</p>)}
+                      <p className="w-60 text-center text-xs font-bold" style={{ color: GOLD }}>Final</p>
+                      {[...halfRounds].reverse().map((round, index) => <p key={`r${round}`} className="w-66 text-center text-xs font-bold" style={{ color: GOLD }}>{roundName(rounds, halfRounds.length - 1 - index, fixtures)}</p>)}
                     </div>
-                    <Tree node={root} fixtures={fixtures} isFinal />
+                    <div className="flex items-center">
+                      {leftNode && <><Tree node={leftNode} fixtures={fixtures} /><span className="h-px w-6 bg-[#715426]" /></>}
+                      <Bout fixture={root} isFinal />
+                      {rightNode && <><span className="h-px w-6 bg-[#715426]" /><Tree node={rightNode} fixtures={fixtures} mirror /></>}
+                    </div>
                   </div>
                 </div>
               )}
@@ -60,24 +66,29 @@ function roundName(rounds: number[], index: number, fixtures: Fixture[]) {
   return ({ 1: 'Final', 2: 'Semifinales', 3: 'Cuartos', 4: 'Octavos' } as Record<number, string>)[left] ?? `Ronda ${rounds[index]}`;
 }
 
-function Tree({ node, fixtures, isFinal = false }: { node: Fixture; fixtures: Fixture[]; isFinal?: boolean }) {
-  const children = fixtures
+function childrenOf(node: Fixture, fixtures: Fixture[]) {
+  return fixtures
     .filter((m) => m.round === node.round - 1 && Math.floor(m.bracketPosition / 2) === node.bracketPosition)
     .sort((a, b) => a.bracketPosition - b.bracketPosition);
+}
+
+function Tree({ node, fixtures, mirror = false }: { node: Fixture; fixtures: Fixture[]; mirror?: boolean }) {
+  const children = childrenOf(node, fixtures);
+  const side = mirror ? 'left-0' : 'right-0';
   return (
-    <div className="flex items-center">
+    <div className={`flex items-center ${mirror ? 'flex-row-reverse' : ''}`}>
       {children.length > 0 && (
         <div className="flex flex-col">
           {children.map((child, index) => (
-            <div key={child.id} className="relative py-2 pr-6">
-              <Tree node={child} fixtures={fixtures} />
-              <span className="absolute top-1/2 right-0 h-px w-6 bg-[#715426]" />
-              {children.length > 1 && <span className={`absolute right-0 w-px bg-[#715426] ${index === 0 ? 'top-1/2 bottom-0' : 'top-0 bottom-1/2'}`} />}
+            <div key={child.id} className={`relative py-2 ${mirror ? 'pl-6' : 'pr-6'}`}>
+              <Tree node={child} fixtures={fixtures} mirror={mirror} />
+              <span className={`absolute top-1/2 ${side} h-px w-6 bg-[#715426]`} />
+              {children.length > 1 && <span className={`absolute ${side} w-px bg-[#715426] ${index === 0 ? 'top-1/2 bottom-0' : 'top-0 bottom-1/2'}`} />}
             </div>
           ))}
         </div>
       )}
-      <Bout fixture={node} isFinal={isFinal} />
+      <Bout fixture={node} isFinal={false} />
     </div>
   );
 }
