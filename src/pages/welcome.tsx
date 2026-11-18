@@ -144,7 +144,7 @@ export default function WelcomePage() {
             </ul>
           </div>
           <div className="flex justify-center">
-            <img src="/illustrations/landing/landing-coach.webp" alt="" className="float max-h-80 w-auto object-contain" loading="lazy" />
+            <img src="/illustrations/landing/landing-coach.webp" alt="" className="float max-h-56 w-auto object-contain" loading="lazy" />
           </div>
         </section>
 
@@ -152,7 +152,7 @@ export default function WelcomePage() {
         <section id="clubes" className="relative grid scroll-mt-24 items-center gap-10 lg:grid-cols-2">
           <Halo color="red" className="bottom-0 left-0 size-96" />
           <div className="order-2 flex justify-center lg:order-1">
-            <img src="/illustrations/landing/landing-torneos.webp" alt="" className="float max-h-96 w-auto object-contain" loading="lazy" />
+            <img src="/illustrations/landing/landing-torneos.webp" alt="" className="float max-h-60 w-auto object-contain" loading="lazy" />
           </div>
           <div className="order-1 flex flex-col items-start gap-4 lg:order-2">
             <span className="flex items-center gap-2 text-sm font-bold text-brand"><Shield className="size-4" aria-hidden />Plan Enterprise</span>
