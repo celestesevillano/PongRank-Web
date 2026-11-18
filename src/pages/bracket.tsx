@@ -46,7 +46,7 @@ export default function BracketPage() {
                     const bouts = fixtures.filter((m) => m.round === round).sort((a, b) => a.bracketPosition - b.bracketPosition);
                     return (
                       <div key={round} className="flex min-w-60 flex-col pr-6">
-                        <p className="mb-3 text-center text-xs font-bold" style={{ color: GOLD }}>{isFinal ? 'Final' : `Ronda ${round}`}</p>
+                        <p className="mb-3 text-center text-xs font-bold" style={{ color: GOLD }}>{roundName(rounds, index, fixtures)}</p>
                         <div className="flex flex-1 flex-col justify-around gap-4">
                           {bouts.map((m) => <Bout key={m.id} fixture={m} isFinal={isFinal} />)}
                         </div>
@@ -68,6 +68,13 @@ export default function BracketPage() {
       </ScreenState>
     </div>
   );
+}
+
+function roundName(rounds: number[], index: number, fixtures: Fixture[]) {
+  const count = (round: number) => fixtures.filter((m) => m.round === round).length;
+  if (index === 0 && rounds.length > 1 && count(rounds[0]) * 2 !== count(rounds[1])) return 'Preliminar';
+  const left = rounds.length - index;
+  return ({ 1: 'Final', 2: 'Semifinales', 3: 'Cuartos', 4: 'Octavos' } as Record<number, string>)[left] ?? `Ronda ${rounds[index]}`;
 }
 
 function Bout({ fixture, isFinal }: { fixture: Fixture; isFinal: boolean }) {
