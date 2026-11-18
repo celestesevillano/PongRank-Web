@@ -58,7 +58,6 @@ export default function WelcomePage() {
             <span className="rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-sm font-extrabold tracking-wider text-accent uppercase">Tenis de mesa competitivo</span>
             <h1 className="text-4xl leading-[1.1] font-black italic sm:text-5xl lg:text-6xl">El ranking de tenis de mesa de tu comunidad</h1>
             <p className="text-lg text-muted">PongRank une partidas, ranking y Pongmigos en un solo lugar. Juega, confirma el resultado y mira cómo cambia tu rating.</p>
-            <ButtonLink to={paths.register} className="mt-1 w-full sm:w-auto sm:min-w-56">Empezar gratis</ButtonLink>
           </div>
           <div className="flex justify-center">
             <img src="/illustrations/landing/landing-hero.webp" alt="Pongi y Ranky jugando una partida de tenis de mesa" className="float w-full max-w-xl drop-shadow-[0_0_60px_rgba(232,38,47,0.3)]" />
