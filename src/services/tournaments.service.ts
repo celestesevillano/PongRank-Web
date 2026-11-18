@@ -24,6 +24,8 @@ export type Fixture = {
   player2: PlayerSummary | null;
   winner: PlayerSummary | null;
   matchId: number | null;
+  setsPlayer1?: number | null;
+  setsPlayer2?: number | null;
   status: 'PENDING_PLAYERS' | 'SCHEDULED' | 'COMPLETED' | 'WALKOVER' | 'BYE';
 };
 

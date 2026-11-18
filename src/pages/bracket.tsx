@@ -94,15 +94,23 @@ function Tree({ node, fixtures, mirror = false }: { node: Fixture; fixtures: Fix
 }
 
 function Bout({ fixture, isFinal }: { fixture: Fixture; isFinal: boolean }) {
-  return (
-    <div className={`w-60 shrink-0 rounded-xl border bg-[#1A1408] p-3 ${isFinal ? 'border-[#FFD278]' : 'border-[#715426]'}`}>
-      <Slot name={fixture.player1?.name} won={!!fixture.winner && fixture.winner.id === fixture.player1?.id} />
+  const done = fixture.status === 'COMPLETED' || fixture.status === 'WALKOVER';
+  const body = (
+    <div className={`w-60 shrink-0 rounded-xl border bg-[#1A1408] p-3 ${isFinal ? 'border-[#FFD278]' : 'border-[#715426]'} ${fixture.matchId ? 'transition hover:border-[#FFD278]' : ''}`}>
+      <Slot name={fixture.player1?.name} sets={done ? fixture.setsPlayer1 : null} won={!!fixture.winner && fixture.winner.id === fixture.player1?.id} />
       <div className="my-1 h-px bg-[#715426]" />
-      <Slot name={fixture.player2?.name} won={!!fixture.winner && fixture.winner.id === fixture.player2?.id} />
+      <Slot name={fixture.player2?.name} sets={done ? fixture.setsPlayer2 : null} won={!!fixture.winner && fixture.winner.id === fixture.player2?.id} />
+      {fixture.status === 'WALKOVER' && <p className="mt-1 text-center text-[11px] font-bold text-muted">Walkover</p>}
     </div>
   );
+  return fixture.matchId ? <Link to={`/matches/${fixture.matchId}`}>{body}</Link> : body;
 }
 
-function Slot({ name, won }: { name?: string; won: boolean }) {
-  return <p className={`truncate text-sm ${won ? 'font-extrabold text-[#FFD278]' : 'font-bold'}`}>{name ?? 'Por definir'}</p>;
+function Slot({ name, sets, won }: { name?: string; sets?: number | null; won: boolean }) {
+  return (
+    <p className={`flex items-center justify-between gap-2 text-sm ${won ? 'font-extrabold text-[#FFD278]' : 'font-bold'}`}>
+      <span className="truncate">{name ?? 'Por definir'}</span>
+      {sets != null && <span className="tabular-nums">{sets}</span>}
+    </p>
+  );
 }
