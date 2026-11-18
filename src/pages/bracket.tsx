@@ -1,12 +1,12 @@
-import { CalendarClock, ChevronLeft, Swords, Trophy } from 'lucide-react';
+import { ChevronLeft, Swords } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
+import { TournamentBanner } from '@/components/tournaments/tournament-banner';
 import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { tournamentsService, type Fixture } from '@/services/tournaments.service';
-import { FORMAT_LABELS } from '@/utils/match-status';
 
 const GOLD = '#FFD278';
 
@@ -24,19 +24,12 @@ export default function BracketPage() {
           const fixtures = matches.filter((m) => m.stage === 'KNOCKOUT');
           const rounds = [...new Set(fixtures.map((m) => m.round))].sort((a, b) => a - b);
           const myMatch = fixtures.find((m) => m.status === 'SCHEDULED' && m.matchId && (m.player1?.id === player?.id || m.player2?.id === player?.id));
-          const date = tournament.startDate ? new Date(`${tournament.startDate}-05:00`).toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'medium', timeStyle: 'short' }) : null;
           return (
             <>
-              <Card className="flex flex-col gap-2">
-                <h1 className="text-2xl font-extrabold">{tournament.name}</h1>
-                <div className="flex flex-wrap gap-3 text-sm text-muted">
-                  {date && <span className="inline-flex items-center gap-1"><CalendarClock className="size-4" /> {date}</span>}
-                  <span className="inline-flex items-center gap-1"><Swords className="size-4" /> {FORMAT_LABELS[tournament.matchFormat]}</span>
-                  <span>{participants.length} participantes</span>
-                </div>
-                {tournament.winner && <p className="flex items-center gap-2 font-bold" style={{ color: GOLD }}><Trophy className="size-5" /> Campeón: {tournament.winner.name}</p>}
-                {myMatch?.matchId && <Link to={`/matches/${myMatch.matchId}`} className="inline-flex w-fit items-center gap-1 font-bold text-accent"><Swords className="size-4" /> Ver mi partida {myMatch.player1?.id === player?.id ? `vs. ${myMatch.player2?.name}` : `vs. ${myMatch.player1?.name}`}</Link>}
-              </Card>
+              <TournamentBanner tournament={tournament}>
+                <p className="text-sm text-muted">{participants.length} participantes</p>
+                {myMatch?.matchId && <Link to={`/matches/${myMatch.matchId}`} className="mt-1 inline-flex w-fit items-center gap-1 font-bold text-accent"><Swords className="size-4" /> Ver mi partida {myMatch.player1?.id === player?.id ? `vs. ${myMatch.player2?.name}` : `vs. ${myMatch.player1?.name}`}</Link>}
+              </TournamentBanner>
 
               <h2 className="text-lg font-extrabold">Diagrama</h2>
               {fixtures.length === 0 ? <p className="text-sm text-muted">El cuadro todavía no tiene partidos.</p> : (
