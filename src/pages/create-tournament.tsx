@@ -1,5 +1,5 @@
 import { Check, ChevronLeft } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
@@ -22,26 +22,27 @@ export default function CreateTournamentPage() {
   const [format, setFormat] = useState<TournamentFormat>('BO3');
   const [date, setDate] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
+  const keyRef = useRef(crypto.randomUUID());
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   const list = (members.data ?? []).filter((m) => m.player);
   const toggle = (playerId: number) => setSelected((current) => current.includes(playerId) ? current.filter((id) => id !== playerId) : [...current, playerId]);
 
+  const validCount = selected.length >= 4 && selected.length % 4 === 0 && selected.length <= 64;
   const publish = async () => {
-    if (selected.length < 2) { setNotice('Elige al menos 2 participantes.'); return; }
+    if (!validCount) { setNotice('Elige 4 participantes o un múltiplo de 4 (máximo 64).'); return; }
     setBusy(true);
     try {
-      const tournament = await tournamentsService.create({
+      const tournament = await tournamentsService.publish({
         clubId,
         name: name.trim(),
-        type: 'INTERNAL',
         matchFormat: format,
-        startDate: date ? new Date(date).toISOString() : undefined,
+        scheduledAt: new Date(date || Date.now()).toISOString(),
+        playerIds: selected,
+        publicationKey: keyRef.current,
       });
-      await Promise.all(selected.map((playerId) => tournamentsService.addParticipant(tournament.id, playerId)));
-      setNotice('Torneo creado.');
-      navigate(`/social/club/${clubId}`);
+      navigate(`/matches/tournaments/${tournament.id}`);
     } catch (err) {
       setNotice(toApiError(err).message);
     } finally {
@@ -79,7 +80,7 @@ export default function CreateTournamentPage() {
               </button>
             );
           })}
-          <Button disabled={selected.length < 2} onClick={() => setStep(2)}>Revisar</Button>
+          <Button disabled={!validCount} onClick={() => setStep(2)}>Revisar ({selected.length}, múltiplo de 4)</Button>
         </div>
       )}
 

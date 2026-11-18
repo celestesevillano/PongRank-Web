@@ -8,7 +8,8 @@ import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { clubsService } from '@/services/clubs.service';
-import { tournamentsService } from '@/services/tournaments.service';
+import { formatTournamentDate, tournamentStatusLabel } from '@/components/tournaments/tournament-banner';
+import { tournamentsService, type Tournament } from '@/services/tournaments.service';
 import { toApiError } from '@/utils/api-error';
 
 export default function ClubDetailPage() {
@@ -74,7 +75,7 @@ export default function ClubDetailPage() {
 
             {isAdmin && <button type="button" onClick={() => setPanel('transfer')} className="text-center font-bold text-accent">Transferir administración</button>}
 
-            {!isMember && !isAdmin && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Solicitar ingreso</Button>}
+                        {!isMember && !isAdmin && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Solicitar ingreso</Button>}
             </div>
             <div className="flex flex-col gap-4 lg:sticky lg:top-24">
             {panel === 'none' && <p className="rounded-2xl border border-line bg-surface p-5 text-sm text-muted">Elige una opción para ver su detalle aquí.</p>}
@@ -84,10 +85,11 @@ export default function ClubDetailPage() {
             ))}</Panel>}
             {panel === 'notices' && <Panel title="Avisos">{(Array.isArray(announcements.data) ? announcements.data : []).length === 0 ? <p className="text-sm text-muted">Sin anuncios.</p> : announcements.data?.map((item) => <Card key={item.id}><p className="font-bold">{item.title}</p><p className="text-sm text-muted">{item.body}</p></Card>)}</Panel>}
             {panel === 'members' && <Panel title="Miembros">{(members.data ?? []).map((m) => <Card key={m.id} className="flex justify-between"><span className="font-bold">{m.player?.name}</span><span className="text-xs text-muted">{m.role === 'CLUB_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</Panel>}
-            {panel === 'tournaments' && <Panel title="Torneos">{(tournaments.data ?? []).length === 0 ? <p className="text-sm text-muted">Todavía no hay torneos.</p> : tournaments.data?.map((t: { id: number; name: string; status: string }) => <Card key={t.id} className="flex justify-between"><span className="font-bold">{t.name}</span><span className="text-xs text-muted">{t.status}</span></Card>)}</Panel>}
+            {panel === 'tournaments' && <Panel title="Torneos">{(tournaments.data ?? []).length === 0 ? <p className="text-sm text-muted">Todavía no hay torneos.</p> : tournaments.data?.map((t: Tournament) => <Link key={t.id} to={`/matches/tournaments/${t.id}`}><Card className="flex flex-col gap-1 border-[#71313B]"><span className="inline-flex items-center gap-1 text-xs font-bold text-primary"><Trophy className="size-3.5" /> {tournamentStatusLabel(t)}</span><span className="text-lg font-extrabold">{t.name}</span>{t.startDate && <span className="text-xs text-muted">{formatTournamentDate(t.startDate)}</span>}<span className="flex items-center justify-end gap-1 text-sm font-bold text-accent">Ver torneo<ChevronRight className="size-4" /></span></Card></Link>)}</Panel>}
             {panel === 'notice' && <Panel title="Nuevo aviso"><input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje" rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><Button onClick={async () => { if (!title.trim() || !body.trim()) return; await clubsService.createAnnouncement(clubId, { title, body }); setTitle(''); setBody(''); setPanel('notices'); announcements.refetch(); }}>Publicar</Button></Panel>}
             {panel === 'edit' && <Panel title="Editar club"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><input value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><div className="flex gap-2"><Button onClick={async () => { await clubsService.update(clubId, { name, address }); setPanel('none'); club.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></Panel>}
             {panel === 'transfer' && <Panel title="Transferir administración">{(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((m) => <Button key={m.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, m.player!.id); setPanel('none'); members.refetch(); }}>{m.player?.name}</Button>)}<Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></Panel>}
+
             </div>
           </div>
         )}
