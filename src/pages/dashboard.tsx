@@ -44,11 +44,23 @@ export default function DashboardPage() {
   const toReview = (active.data ?? []).filter((match) => matchPerspective(match, playerId).awaitingMyReview);
   const recentMatches = recent.data?.content ?? [];
 
+  const hasActivity = recentMatches.length > 0 || Boolean(recent.error);
+
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
-      <h1 className="text-[34px] leading-tight font-extrabold">
-        Hola, <span className="text-accent">{firstName}</span>
-      </h1>
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <h1 className="text-[34px] leading-tight font-extrabold sm:text-5xl">
+          Hola, <span className="text-accent">{firstName}</span>
+        </h1>
+        <div className="flex gap-2">
+          <ButtonLink to={paths.newMatch} icon={Plus} className="min-h-12 flex-1 sm:min-w-48 sm:flex-none">
+            Nueva partida
+          </ButtonLink>
+          <ButtonLink to={paths.findMatch} variant="secondary" icon={Search} className="min-h-12 flex-1 sm:min-w-48 sm:flex-none">
+            Buscar partida
+          </ButtonLink>
+        </div>
+      </div>
 
       {toReview.length > 0 && (
         <Link
@@ -65,75 +77,63 @@ export default function DashboardPage() {
         </Link>
       )}
 
-      <section aria-label="Tu rating" className="relative overflow-hidden rounded-2xl border border-[#248997] bg-[#071C23] p-4">
-        <CardLighting color={CYAN} court />
-        <img src={BrandImages.introBall} alt="" className="pointer-events-none absolute right-4 -bottom-2 size-14.5 opacity-70" />
-        <div className="relative flex flex-wrap items-start gap-2">
-          <div className="flex-1">
-            <p className="text-xs font-bold text-[#C2C4CA]">RATING ACTUAL</p>
-            <p className="text-5xl font-black tabular-nums">{Math.round(currentRating)}</p>
-          </div>
-          {standing.data?.position != null && (
-            <div className="max-w-[48%] p-2">
-              <p className="text-xs font-bold text-[#C2C4CA] tabular-nums">Puesto #{standing.data.position}</p>
-              <p className="line-clamp-2 text-[13px] text-[#B8BDC3]">{standing.data.name}</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <div className="flex gap-2">
-        <ButtonLink to={paths.newMatch} icon={Plus} className="min-h-12 flex-1">
-          Nueva partida
-        </ButtonLink>
-        <ButtonLink to={paths.findMatch} variant="secondary" icon={Search} className="min-h-12 flex-1">
-          Buscar partida
-        </ButtonLink>
-      </div>
-
-      <div className="flex gap-2">
-        <ShortcutBanner
-          title="Estadísticas"
-          subtitle={statisticsLocked ? 'Requiere Básico' : 'Tu progreso'}
-          locked={statisticsLocked}
-          Icon={ChartNoAxesColumnIncreasing}
-          artwork={HomeArt.statistics}
-          onClick={() => (statisticsLocked ? openPlans() : navigate(paths.statistics))}
-        />
-        <ShortcutBanner
-          title="Coach"
-          subtitle="Solo en la app"
-          locked
-          Icon={Bot}
-          artwork={HomeArt.coach}
-          coach
-        />
-      </div>
-
-      {(recentMatches.length > 0 || recent.error) && (
-        <section className="flex flex-col gap-2" aria-labelledby="activity-title">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id="activity-title" className="text-lg font-extrabold">
-              Tu actividad
-            </h2>
-            <Link to={paths.matches} className="flex min-h-11 items-center gap-1 font-bold text-accent">
-              Ver partidas <ChevronRight aria-hidden className="size-4" />
-            </Link>
-          </div>
-          {recent.error ? (
-            <div className="flex flex-col items-start gap-2 rounded-[14px] border border-line bg-surface p-3">
-              <p className="text-[15px] text-muted">{recent.error.message}</p>
-              {isRetryable(recent.error) && (
-                <Button variant="secondary" icon={RotateCw} onClick={recent.refetch}>
-                  Reintentar
-                </Button>
+      <div className={`grid items-start gap-6 ${hasActivity ? 'lg:grid-cols-[1.7fr_1fr]' : ''}`}>
+        <div className="flex flex-col gap-6">
+          <section aria-label="Tu rating" className="relative overflow-hidden rounded-2xl border border-[#248997] bg-[#071C23] p-6 sm:p-8">
+            <CardLighting color={CYAN} court />
+            <img src={BrandImages.introBall} alt="" className="pointer-events-none absolute right-6 -bottom-2 size-20 opacity-70" />
+            <div className="relative flex flex-wrap items-start gap-4">
+              <div className="flex-1">
+                <p className="text-sm font-bold text-[#C2C4CA]">RATING ACTUAL</p>
+                <p className="text-6xl font-black tabular-nums sm:text-7xl">{Math.round(currentRating)}</p>
+              </div>
+              {standing.data?.position != null && (
+                <div className="max-w-[48%] p-2 sm:mr-24">
+                  <p className="text-lg font-extrabold text-[#C2C4CA] tabular-nums">Puesto #{standing.data.position}</p>
+                  <p className="line-clamp-2 text-sm text-[#B8BDC3]">{standing.data.name}</p>
+                </div>
               )}
             </div>
-          ) : (
-            recentMatches.map((match) => <ActivityTile key={match.id} match={match} playerId={playerId} />)
-          )}
-        </section>
-      )}
+          </section>
+
+          <div className="grid gap-4 sm:grid-cols-2 [&>*]:min-h-36">
+            <ShortcutBanner
+              title="Estadísticas"
+              subtitle={statisticsLocked ? 'Requiere Básico' : 'Tu progreso'}
+              locked={statisticsLocked}
+              Icon={ChartNoAxesColumnIncreasing}
+              artwork={HomeArt.statistics}
+              onClick={() => (statisticsLocked ? openPlans() : navigate(paths.statistics))}
+            />
+            <ShortcutBanner title="Coach" subtitle="Solo en la app" locked Icon={Bot} artwork={HomeArt.coach} coach />
+          </div>
+        </div>
+
+        {hasActivity && (
+          <section className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5" aria-labelledby="activity-title">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="activity-title" className="text-lg font-extrabold">
+                Tu actividad
+              </h2>
+              <Link to={paths.matches} className="flex min-h-11 items-center gap-1 font-bold text-accent">
+                Ver partidas <ChevronRight aria-hidden className="size-4" />
+              </Link>
+            </div>
+            {recent.error ? (
+              <div className="flex flex-col items-start gap-2 rounded-[14px] border border-line bg-black p-3">
+                <p className="text-[15px] text-muted">{recent.error.message}</p>
+                {isRetryable(recent.error) && (
+                  <Button variant="secondary" icon={RotateCw} onClick={recent.refetch}>
+                    Reintentar
+                  </Button>
+                )}
+              </div>
+            ) : (
+              recentMatches.map((match) => <ActivityTile key={match.id} match={match} playerId={playerId} />)
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }
