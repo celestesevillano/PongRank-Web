@@ -1,56 +1,85 @@
-import { ChevronLeft, Trophy } from 'lucide-react';
+import { CalendarClock, ChevronLeft, Swords, Trophy } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 
+import { ScreenState } from '@/components/common/screen-state';
+import { Card } from '@/components/ui/card';
+import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
-import { matchesService } from '@/services/matches.service';
+import { tournamentsService, type Fixture } from '@/services/tournaments.service';
+import { FORMAT_LABELS } from '@/utils/match-status';
+
+const GOLD = '#FFD278';
 
 export default function BracketPage() {
   const { id } = useParams();
   const tournamentId = Number(id);
-  const matches = useFetch((signal) => matchesService.tournamentMatches(tournamentId, signal), [tournamentId]);
-  const list = matches.data ?? [];
-  const rounds = [...new Set(list.map((m) => m.round ?? 1))].sort((a, b) => a - b);
+  const { player } = useSession();
+  const detail = useFetch((signal) => tournamentsService.fullDetail(tournamentId, signal), [tournamentId]);
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
       <Link to="/matches/tournaments" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
-      <h1 className="text-2xl font-extrabold">Cuadro</h1>
-      {list.length === 0 ? (
-        <div className="flex flex-col items-center gap-2 py-8">
-          <img src="/illustrations/partidas/partidas-tournament.webp" alt="" className="w-40" />
-          <p className="text-sm text-muted">El cuadro todavía no tiene partidos.</p>
-        </div>
-      ) : (
-        <div className="flex items-stretch gap-0 overflow-x-auto pb-4">
-          {rounds.map((round, index) => {
-            const bouts = list.filter((m) => (m.round ?? 1) === round);
-            const isFinal = index === rounds.length - 1;
-            return (
-              <div key={round} className="flex min-w-56 flex-col">
-                <p className="mb-3 text-center text-xs font-bold text-[#FFD278]">{isFinal ? 'Final' : `Ronda ${round}`}</p>
-                <div className="flex flex-1 flex-col justify-around gap-4">
-                  {bouts.map((match) => (
-                    <div key={match.id} className="relative">
-                      <div className={`rounded-xl border bg-[#1A1408] p-3 ${isFinal ? 'border-[#FFD278]' : 'border-[#715426]'}`}>
-                        <Slot name={match.player1?.name} />
-                        <div className="my-1 h-px bg-[#715426]" />
-                        <Slot name={match.player2?.name} />
-                        {match.scoreSummary && <p className="mt-1 text-center text-xs font-bold text-[#FFD278]">{match.scoreSummary}</p>}
-                      </div>
-                      {!isFinal && <span className="absolute top-1/2 -right-3 h-px w-3 bg-[#715426]" />}
-                    </div>
-                  ))}
+      <ScreenState {...detail} onRetry={detail.refetch} isEmpty={() => false}>
+        {({ tournament, participants, matches }) => {
+          const fixtures = matches.filter((m) => m.stage === 'KNOCKOUT');
+          const rounds = [...new Set(fixtures.map((m) => m.round))].sort((a, b) => a - b);
+          const myMatch = fixtures.find((m) => m.status === 'SCHEDULED' && m.matchId && (m.player1?.id === player?.id || m.player2?.id === player?.id));
+          const date = tournament.startDate ? new Date(`${tournament.startDate}-05:00`).toLocaleString('es-PE', { timeZone: 'America/Lima', dateStyle: 'medium', timeStyle: 'short' }) : null;
+          return (
+            <>
+              <Card className="flex flex-col gap-2">
+                <h1 className="text-2xl font-extrabold">{tournament.name}</h1>
+                <div className="flex flex-wrap gap-3 text-sm text-muted">
+                  {date && <span className="inline-flex items-center gap-1"><CalendarClock className="size-4" /> {date}</span>}
+                  <span className="inline-flex items-center gap-1"><Swords className="size-4" /> {FORMAT_LABELS[tournament.matchFormat]}</span>
+                  <span>{participants.length} participantes</span>
                 </div>
-                {isFinal && <Trophy className="mx-auto mt-3 size-6 text-[#FFD278]" />}
+                {tournament.winner && <p className="flex items-center gap-2 font-bold" style={{ color: GOLD }}><Trophy className="size-5" /> Campeón: {tournament.winner.name}</p>}
+                {myMatch?.matchId && <Link to={`/matches/${myMatch.matchId}`} className="inline-flex w-fit items-center gap-1 font-bold text-accent"><Swords className="size-4" /> Ver mi partida {myMatch.player1?.id === player?.id ? `vs. ${myMatch.player2?.name}` : `vs. ${myMatch.player1?.name}`}</Link>}
+              </Card>
+
+              <h2 className="text-lg font-extrabold">Diagrama</h2>
+              {fixtures.length === 0 ? <p className="text-sm text-muted">El cuadro todavía no tiene partidos.</p> : (
+                <div className="flex items-stretch overflow-x-auto pb-4">
+                  {rounds.map((round, index) => {
+                    const isFinal = index === rounds.length - 1;
+                    const bouts = fixtures.filter((m) => m.round === round).sort((a, b) => a.bracketPosition - b.bracketPosition);
+                    return (
+                      <div key={round} className="flex min-w-60 flex-col pr-6">
+                        <p className="mb-3 text-center text-xs font-bold" style={{ color: GOLD }}>{isFinal ? 'Final' : `Ronda ${round}`}</p>
+                        <div className="flex flex-1 flex-col justify-around gap-4">
+                          {bouts.map((m) => <Bout key={m.id} fixture={m} isFinal={isFinal} />)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <h2 className="text-lg font-extrabold">Participantes</h2>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {[...participants].sort((a, b) => a.seed - b.seed).map(({ player: p, seed }) => (
+                  <Card key={p.id} className="flex justify-between"><span className="font-bold">{seed}. {p.name}</span><span style={{ color: GOLD }}>{Math.round(p.ratingGlicko)}</span></Card>
+                ))}
               </div>
-            );
-          })}
-        </div>
-      )}
+            </>
+          );
+        }}
+      </ScreenState>
     </div>
   );
 }
 
-function Slot({ name }: { name?: string }) {
-  return <p className="truncate text-sm font-bold">{name ?? 'Por definir'}</p>;
+function Bout({ fixture, isFinal }: { fixture: Fixture; isFinal: boolean }) {
+  return (
+    <div className={`rounded-xl border bg-[#1A1408] p-3 ${isFinal ? 'border-[#FFD278]' : 'border-[#715426]'}`}>
+      <Slot name={fixture.player1?.name} won={!!fixture.winner && fixture.winner.id === fixture.player1?.id} />
+      <div className="my-1 h-px bg-[#715426]" />
+      <Slot name={fixture.player2?.name} won={!!fixture.winner && fixture.winner.id === fixture.player2?.id} />
+    </div>
+  );
+}
+
+function Slot({ name, won }: { name?: string; won: boolean }) {
+  return <p className={`truncate text-sm ${won ? 'font-extrabold text-[#FFD278]' : 'font-bold'}`}>{name ?? 'Por definir'}</p>;
 }
