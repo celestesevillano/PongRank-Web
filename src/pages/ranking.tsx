@@ -20,29 +20,33 @@ export default function RankingPage() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-extrabold">Ranking</h1>
-        {communities.data && communities.data.length > 1 && (
-          <select
-            value={communityId}
-            onChange={(e) => ranking.update({ community: e.target.value, page: '0' })}
-            className="rounded-lg border border-line bg-black px-3 py-2"
-          >
-            {communities.data.map((community) => (
-              <option key={community.id} value={community.id}>
-                {community.name}
-              </option>
-            ))}
-          </select>
-        )}
+        <h1 className="text-3xl font-extrabold md:text-4xl">Ranking</h1>
       </div>
+
+      {communities.data && communities.data.length > 1 && (
+        <div role="tablist" aria-label="Comunidad" className="flex flex-wrap gap-2">
+          {communities.data.map((community) => (
+            <button
+              key={community.id}
+              type="button"
+              role="tab"
+              aria-selected={community.id === communityId}
+              onClick={() => ranking.update({ community: String(community.id), page: '0' })}
+              className={`min-h-10 rounded-full border px-4 text-sm font-bold ${community.id === communityId ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-muted hover:text-white'}`}
+            >
+              {community.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       <ScreenState
         {...communities}
         onRetry={communities.refetch}
         isEmpty={(data) => data.length === 0}
-        emptyMessage="Aún no perteneces a ninguna comunidad. Únete a una desde la app móvil."
+        emptyMessage="Aún no perteneces a ninguna comunidad. Únte a una desde la app móvil."
       >
         {() => (
           <ScreenState {...ranking} onRetry={ranking.refetch} isEmpty={(data) => data.content.length === 0} emptyMessage="Esta comunidad todavía no tiene jugadores en el ranking.">
@@ -52,17 +56,17 @@ export default function RankingPage() {
                   <table className="w-full text-left">
                     <thead className="border-b border-line text-xs text-muted uppercase">
                       <tr>
-                        <th className="px-4 py-3">#</th>
-                        <th className="px-4 py-3">Jugador</th>
-                        <th className="px-4 py-3 text-right">Rating</th>
+                        <th className="px-5 py-4">#</th>
+                        <th className="px-5 py-4">Jugador</th>
+                        <th className="px-5 py-4 text-right">Rating</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-line">
                       {page.content.map((entry) => (
                         <tr key={entry.playerId} className={entry.playerId === player!.id ? 'bg-brand/15' : ''}>
-                          <td className="px-4 py-3 font-bold text-brand">{entry.position}</td>
-                          <td className="px-4 py-3">{entry.playerName}</td>
-                          <td className="px-4 py-3 text-right font-bold">{Math.round(entry.ratingGlicko)}</td>
+                          <td className="px-5 py-4 text-lg font-extrabold text-brand">{entry.position}</td>
+                          <td className="px-5 py-4 text-lg">{entry.playerName}</td>
+                          <td className="px-5 py-4 text-right text-lg font-extrabold tabular-nums">{Math.round(entry.ratingGlicko)}</td>
                         </tr>
                       ))}
                     </tbody>

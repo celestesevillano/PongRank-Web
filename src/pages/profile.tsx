@@ -2,6 +2,7 @@ import { ChevronRight, Layers, Pencil, Settings, Trophy } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 
+import { WhatsappCard } from '@/components/profile/whatsapp-card';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { TextField } from '@/components/ui/text-field';
@@ -103,6 +104,8 @@ export default function ProfilePage() {
           <ChevronRight className="size-4 text-muted" />
         </button>
       </div>
+
+      <WhatsappCard />
 
       {editing && (
         <Card>

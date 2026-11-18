@@ -27,10 +27,10 @@ export function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-line bg-black/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
           <img src={BrandImages.wordmark} alt="PongRank" width={116} height={14} className="h-5 w-29 object-contain object-left" />
           <nav aria-label="Principal" className="hidden gap-1 sm:flex">
-            {links.map((link) => (
+            {links.filter((link) => link.to !== paths.profile).map((link) => (
               <NavLink key={link.to} to={link.to} end={link.end} className="relative rounded-lg px-3 py-1.5 text-sm font-bold">
                 {({ isActive }) => <DesktopLink link={link} active={isActive || inSection(link)} />}
               </NavLink>
@@ -40,7 +40,14 @@ export function Navbar() {
             {isSystemAdmin(player?.role) && (
               <NavLink to={paths.admin} className="sm:hidden" aria-label="Admin"><ShieldCheck className="size-5" /></NavLink>
             )}
-            <span className="hidden max-w-36 truncate text-muted md:inline">{player?.name}</span>
+            <NavLink
+              to={paths.profile}
+              aria-label="Mi perfil"
+              className={({ isActive }) => `hidden max-w-44 items-center gap-2 rounded-full border px-3 py-1.5 font-bold sm:flex ${isActive ? 'border-brand bg-brand text-white' : 'border-line bg-surface text-white hover:border-accent'}`}
+            >
+              <CircleUser aria-hidden className="size-4 shrink-0" />
+              <span className="truncate">{player?.name}</span>
+            </NavLink>
             <button type="button" onClick={() => void signOut()} className="flex items-center gap-1.5 font-bold text-brand hover:underline">
               <LogOut aria-hidden className="size-4" />
               Salir
