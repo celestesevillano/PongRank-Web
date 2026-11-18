@@ -1,7 +1,15 @@
 import { http } from '@/services/http';
 import type { Friendship } from '@/types/api';
 
+export type PongmigosVisibility = 'EVERYONE' | 'ONLY_ME';
+
 export const friendshipsService = {
+  getVisibility: (signal?: AbortSignal) =>
+    http.get<{ visibility: PongmigosVisibility }>('/friendships/me/visibility', { signal }).then((r) => r.data),
+
+  updateVisibility: (visibility: PongmigosVisibility) =>
+    http.patch<{ visibility: PongmigosVisibility }>('/friendships/me/visibility', { visibility }).then((r) => r.data),
+
   accepted: (playerId: number, signal?: AbortSignal) =>
     http.get<Friendship[]>(`/friendships/players/${playerId}`, { signal }).then((r) => r.data),
 
