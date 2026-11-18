@@ -1,7 +1,8 @@
-import { ChevronLeft, Pencil, Share2, Shield, Trophy, Users } from 'lucide-react';
+import { ChevronLeft, LogOut, Pencil, Share2, Shield, Trophy, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import { ConfirmDialog } from '@/components/common/confirm-dialog';
 import { ScreenState } from '@/components/common/screen-state';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,7 +21,9 @@ export default function CommunityDetailPage() {
   const detail = useFetch((signal) => communitiesService.detail(communityId, signal), [communityId]);
   const members = useFetch((signal) => communitiesService.members(communityId, { page: 0, size: 50 }, signal), [communityId]);
   const ranking = useFetch((signal) => communitiesService.ranking(communityId, { page: 0, size: 3 }, signal), [communityId]);
-  const [panel, setPanel] = useState<'none' | 'edit' | 'members' | 'transfer'>('none');
+  const [panel, setPanel] = useState<'none' | 'edit' | 'members' | 'transfer'>('members');
+  const [leaving, setLeaving] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -29,7 +32,7 @@ export default function CommunityDetailPage() {
   const top = ranking.data?.content.slice(0, 3) ?? [];
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
       <div className="flex items-center justify-between">
         <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
         <div className="flex gap-1">
@@ -40,7 +43,8 @@ export default function CommunityDetailPage() {
 
       <ScreenState {...detail} onRetry={detail.refetch} isEmpty={() => false}>
         {(data) => (
-          <>
+          <div className="grid items-start gap-6 lg:grid-cols-2">
+            <div className="flex flex-col gap-4">
             <Card className="overflow-hidden p-0">
               <div className="relative">
                 <img src="/illustrations/pongrank-comunidad-portada.webp" alt="" className="h-36 w-full object-cover" />
@@ -71,16 +75,38 @@ export default function CommunityDetailPage() {
             </Card>
 
             <div className="flex gap-2">
-              {isAdmin && <Button variant="secondary" className="flex-1" onClick={() => setPanel(panel === 'members' ? 'none' : 'members')}>Ver miembros</Button>}
-              <Button icon={Trophy} className="flex-1" onClick={() => navigate('/ranking')}>Ver ranking</Button>
+              {isMember && <Button variant="secondary" className="flex-1" onClick={() => setPanel('members')}>Ver miembros</Button>}
+              <Button icon={Trophy} className="flex-1" onClick={() => navigate(`/ranking?community=${communityId}`)}>Ver ranking</Button>
             </div>
+            {isMember && !isAdmin && <Button variant="secondary" icon={LogOut} onClick={() => setLeaving(true)}>Salir de la comunidad</Button>}
+            </div>
+            <div className="flex flex-col gap-4 lg:sticky lg:top-24">
 
             {panel === 'members' && <section className="flex flex-col gap-2">{(members.data?.content ?? []).map((m) => <Card key={m.playerId} className="flex justify-between"><span className="font-bold">{m.playerName}</span><span className="text-xs text-muted">{m.role === 'COMMUNITY_ADMIN' ? 'Admin' : 'Miembro'}</span></Card>)}</section>}
             {panel === 'edit' && <section className="flex flex-col gap-2"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><div className="flex gap-2"><Button onClick={async () => { await communitiesService.update(communityId, { name, description }); setPanel('none'); detail.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></section>}
             {panel === 'transfer' && <section className="flex flex-col gap-2"><h2 className="font-bold">Transferir administración</h2>{(members.data?.content ?? []).filter((m) => m.playerId !== player?.id).map((m) => <Button key={m.playerId} variant="secondary" onClick={async () => { await communitiesService.transfer(communityId, m.playerId); setPanel('none'); members.refetch(); }}>{m.playerName}</Button>)}</section>}
-          </>
+            </div>
+          </div>
         )}
       </ScreenState>
+      <ConfirmDialog
+        open={leaving}
+        title="Salir de la comunidad"
+        message="Dejarás de aparecer en su ranking. Podrás volver a unirte si hay cupo."
+        confirmLabel="Salir"
+        loading={busy}
+        onCancel={() => setLeaving(false)}
+        onConfirm={async () => {
+          setBusy(true);
+          try {
+            await communitiesService.leave(communityId, player!.id);
+            navigate('/social');
+          } finally {
+            setBusy(false);
+            setLeaving(false);
+          }
+        }}
+      />
     </div>
   );
 }

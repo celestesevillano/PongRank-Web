@@ -21,7 +21,7 @@ export default function ClubDetailPage() {
   const announcements = useFetch((signal) => clubsService.announcements(clubId, signal), [clubId]);
   const pending = useFetch((signal) => clubsService.pending(clubId, signal), [clubId]);
   const tournaments = useFetch((signal) => tournamentsService.list(clubId, signal), [clubId]);
-  const [panel, setPanel] = useState<'none' | 'requests' | 'ranking' | 'notices' | 'members' | 'edit' | 'transfer' | 'notice' | 'tournaments'>('none');
+  const [panel, setPanel] = useState<'none' | 'requests' | 'ranking' | 'notices' | 'members' | 'edit' | 'transfer' | 'notice' | 'tournaments'>('ranking');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [title, setTitle] = useState('');
@@ -41,14 +41,15 @@ export default function ClubDetailPage() {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
       <div className="flex items-center justify-between">
         <Link to="/social" className="inline-flex items-center gap-1 text-sm font-bold text-muted hover:text-white"><ChevronLeft className="size-4" /> Volver</Link>
         {isAdmin && <button type="button" aria-label="Editar club" onClick={() => { setName(club.data?.name ?? ''); setAddress(club.data?.address ?? ''); setPanel('edit'); }} className="rounded-full p-2 text-white hover:bg-white/10"><Pencil className="size-5" /></button>}
       </div>
       <ScreenState {...club} onRetry={club.refetch} isEmpty={() => false}>
         {(data) => (
-          <>
+          <div className="grid items-start gap-6 lg:grid-cols-2">
+            <div className="flex flex-col gap-4">
             <Card className="overflow-hidden p-0">
               <img src="/illustrations/club-portada.webp" alt="" className="h-36 w-full object-cover" />
               <div className="flex flex-col gap-1 p-4">
@@ -73,6 +74,10 @@ export default function ClubDetailPage() {
 
             {isAdmin && <button type="button" onClick={() => setPanel('transfer')} className="text-center font-bold text-accent">Transferir administración</button>}
 
+            {!isMember && !isAdmin && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Solicitar ingreso</Button>}
+            </div>
+            <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+            {panel === 'none' && <p className="rounded-2xl border border-line bg-surface p-5 text-sm text-muted">Elige una opción para ver su detalle aquí.</p>}
             {panel === 'ranking' && <Panel title="Ranking">{[...(members.data ?? [])].sort((a, b) => (b.player?.ratingGlicko ?? 0) - (a.player?.ratingGlicko ?? 0)).map((m, index) => <Card key={m.id} className="flex justify-between"><span className="font-bold">{index + 1}. {m.player?.name}</span><span className="text-gold">{Math.round(m.player?.ratingGlicko ?? 0)}</span></Card>)}</Panel>}
             {panel === 'requests' && <Panel title="Solicitudes">{(pending.data ?? []).length === 0 ? <p className="text-sm text-muted">Sin solicitudes.</p> : pending.data?.map((item) => (
               <div key={item.id} className="flex items-center justify-between gap-2"><span className="font-bold">{item.player?.name}</span><div className="flex gap-2"><Button onClick={async () => { await clubsService.reviewMembership(item.id, 'approve'); pending.refetch(); members.refetch(); }}>Aprobar</Button><Button variant="secondary" onClick={async () => { await clubsService.reviewMembership(item.id, 'reject'); pending.refetch(); }}>Rechazar</Button></div></div>
@@ -83,9 +88,8 @@ export default function ClubDetailPage() {
             {panel === 'notice' && <Panel title="Nuevo aviso"><input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Título" className="min-h-11 rounded-xl border border-line bg-black px-3" /><textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Mensaje" rows={2} className="rounded-xl border border-line bg-black px-3 py-2" /><Button onClick={async () => { if (!title.trim() || !body.trim()) return; await clubsService.createAnnouncement(clubId, { title, body }); setTitle(''); setBody(''); setPanel('notices'); announcements.refetch(); }}>Publicar</Button></Panel>}
             {panel === 'edit' && <Panel title="Editar club"><input value={name} onChange={(e) => setName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><input value={address} onChange={(e) => setAddress(e.target.value)} className="min-h-11 rounded-xl border border-line bg-black px-3" /><div className="flex gap-2"><Button onClick={async () => { await clubsService.update(clubId, { name, address }); setPanel('none'); club.refetch(); }}>Guardar</Button><Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></div></Panel>}
             {panel === 'transfer' && <Panel title="Transferir administración">{(members.data ?? []).filter((m) => m.player?.id !== player?.id).map((m) => <Button key={m.id} variant="secondary" onClick={async () => { await clubsService.transfer(clubId, m.player!.id); setPanel('none'); members.refetch(); }}>{m.player?.name}</Button>)}<Button variant="secondary" onClick={() => setPanel('none')}>Cancelar</Button></Panel>}
-
-            {!isMember && !isAdmin && data.status === 'APPROVED' && <Button loading={busy} onClick={request}>Solicitar ingreso</Button>}
-          </>
+            </div>
+          </div>
         )}
       </ScreenState>
       {notice && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><div className="rounded-2xl bg-surface p-6 text-center"><p className="text-sm text-muted">{notice}</p><Button className="mt-3" onClick={() => setNotice(null)}>Aceptar</Button></div></div>}
