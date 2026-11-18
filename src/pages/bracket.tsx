@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom';
 
 import { ScreenState } from '@/components/common/screen-state';
 import { TournamentBanner } from '@/components/tournaments/tournament-banner';
-import { Card } from '@/components/ui/card';
 import { useSession } from '@/context/session';
 import { useFetch } from '@/hooks/use-fetch';
 import { tournamentsService, type Fixture } from '@/services/tournaments.service';
@@ -46,13 +45,6 @@ export default function BracketPage() {
                   </div>
                 </div>
               )}
-
-              <h2 className="text-lg font-extrabold">Participantes</h2>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                {[...participants].sort((a, b) => a.seed - b.seed).map(({ player: p, seed }) => (
-                  <Card key={p.id} className="flex justify-between"><span className="font-bold">{seed}. {p.name}</span><span style={{ color: GOLD }}>{Math.round(p.ratingGlicko)}</span></Card>
-                ))}
-              </div>
             </>
           );
         }}
